@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "starbody-core"
+version = "3.2.0"
+description = "Synergetic Manifold Pharmacology (SMP v3.1/v3.2) Pure Emergent Metrology Engine, Python SDK, and CI Gate CLI"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+  {name = "César Castro"}
+]
+dependencies = [
+  "torch>=2.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=7.0.0",
+]
+
+[project.scripts]
+starbody = "starbody_cli:main"
+
+[tool.setuptools]
+py-modules = ["smp_core", "starbody_sdk", "starbody_cli"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

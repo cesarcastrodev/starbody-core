@@ -1,0 +1,3861 @@
+[
+  {
+    "entry_hash": "a3327b682e0302f4b1461a161a7f99de2a0b5ed0c7fead00f841cbe7cef3749e",
+    "entry_type": "SEALED_PREDICTION",
+    "index": 1,
+    "payload": {
+      "power": 0.92
+    },
+    "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+    "study_id": "AUDIT_TEST",
+    "timestamp_utc": "2026-11-17T19:30:59Z"
+  },
+  {
+    "entry_hash": "5434c5fab8399ae4bad129a00d4a001d9d11c7d377d8075f354fe0627df78a3e",
+    "entry_type": "RUN_VERDICT",
+    "index": 2,
+    "payload": {
+      "status": "PASS"
+    },
+    "prev_hash": "a3327b682e0302f4b1461a161a7f99de2a0b5ed0c7fead00f841cbe7cef3749e",
+    "study_id": "AUDIT_TEST",
+    "timestamp_utc": "2026-11-17T19:30:59Z"
+  },
+  {
+    "entry_hash": "ae811ae36e81521629df5aaead614915138255b0e5cc163efc6a7cdb8dc92ba6",
+    "entry_type": "SEALED_PREDICTION",
+    "index": 3,
+    "payload": {
+      "dose_ladder_sqrt2_10steps": [
+        0.0,
+        0.025,
+        0.035355,
+        0.05,
+        0.070711,
+        0.1,
+        0.141421,
+        0.2,
+        0.282843,
+        0.4,
+        0.565685
+      ],
+      "interventions": [
+        "baseline_linear_all_layers",
+        "geodesic_subspace_top25pct_attribution_layers"
+      ],
+      "lockin_dither": {
+        "dither_amplitude": 0.004,
+        "harmonic_cycles": 3,
+        "time_steps_td": 16
+      },
+      "models": [
+        "Qwen/Qwen2.5-1.5B",
+        "Qwen/Qwen2.5-3B"
+      ],
+      "precision": "strict_ieee754_float32_activations_float64_accumulators",
+      "protocol_version": "SMP_v1.0",
+      "registered_hypotheses": {
+        "H1.1": {
+          "a_priori_power": 0.9192,
+          "alpha": 0.05,
+          "exponent_warning_threshold": 2.5,
+          "gsm8k_degradation_tolerance": 0.05,
+          "min_lead_steps": 1,
+          "statement": "Orthogonal exponent alpha_perp breaches 2.5 at least one sqrt(2) dose step before held-out GSM8K or WikiText functional degradation in both Qwen2.5-1.5B and Qwen2.5-3B, and GeodesicSubspaceIntervention (top-25% layers) reduces E_perp by >= 50% at matched E_parallel relative to all-layer linear patches.",
+          "wikitext_ppl_rel_degradation_tolerance": 0.05
+        },
+        "H1.2": {
+          "a_priori_power": 0.9495,
+          "alpha": 0.05,
+          "consolidation_steps_N": [
+            0,
+            10,
+            50,
+            200
+          ],
+          "counter_dose_factors": [
+            0.0,
+            0.125,
+            0.176777,
+            0.25,
+            0.353553,
+            0.5,
+            0.707107,
+            1.0,
+            1.414214,
+            2.0,
+            2.828427,
+            4.0,
+            5.656854
+          ],
+          "min_v50_ratio_200_vs_0": 2.0,
+          "statement": "Applying a rank-1 factual weight edit and running N in {0, 10, 50, 200} fine-tuning steps produces a consolidation window where the counter-dose v50 required to reverse 50% of the edit increases with N and satisfies v50(N=200) >= 2.0 * v50(N=0) in both models."
+        }
+      },
+      "study_id": "SMP_STUDY1_GEODESIC_LLM",
+      "tangent_subspace_rank_k": 4
+    },
+    "prev_hash": "5434c5fab8399ae4bad129a00d4a001d9d11c7d377d8075f354fe0627df78a3e",
+    "study_id": "SMP_STUDY1_GEODESIC_LLM",
+    "timestamp_utc": "2026-11-17T19:30:59Z"
+  },
+  {
+    "entry_hash": "3949952716f40df9bc7d2e82e5f31c7fe6af65dd372a85aed5a6313cca63d77b",
+    "entry_type": "SEALED_PREDICTION",
+    "index": 4,
+    "payload": {
+      "power": 0.92
+    },
+    "prev_hash": "ae811ae36e81521629df5aaead614915138255b0e5cc163efc6a7cdb8dc92ba6",
+    "study_id": "AUDIT_TEST",
+    "timestamp_utc": "2026-11-17T19:39:52Z"
+  },
+  {
+    "entry_hash": "f6def63c8f06605656cece2eb3e7dee6597a8f282f99aa9b10f85f4306462b36",
+    "entry_type": "RUN_VERDICT",
+    "index": 5,
+    "payload": {
+      "status": "PASS"
+    },
+    "prev_hash": "3949952716f40df9bc7d2e82e5f31c7fe6af65dd372a85aed5a6313cca63d77b",
+    "study_id": "AUDIT_TEST",
+    "timestamp_utc": "2026-11-17T19:39:52Z"
+  },
+  {
+    "entry_hash": "05e23175fa69dda839848f88dbae6e75e9034788dec7142781d2d3e58b353111",
+    "entry_type": "RUN_VERDICT",
+    "index": 6,
+    "payload": {
+      "H1_1_summary": {
+        "Qwen/Qwen2.5-1.5B": {
+          "geodesic_top25": {
+            "degradation_dose": 0.070711,
+            "degradation_rung_idx": 4,
+            "early_warning_lead_steps": 0,
+            "low_dose_alpha_perp": 2.032967851664418,
+            "max_alpha_perp": 2.0359577270245635,
+            "mean_selectivity_ratio": 0.43137482350501727,
+            "pass_early_warning": false,
+            "warn_dose": null,
+            "warn_rung_idx": null
+          },
+          "linear_all_layer": {
+            "degradation_dose": ">max_dose",
+            "degradation_rung_idx": null,
+            "early_warning_lead_steps": 0,
+            "low_dose_alpha_perp": 1.9912249677059466,
+            "max_alpha_perp": 1.9912249677059466,
+            "mean_selectivity_ratio": 0.011822738752978346,
+            "pass_early_warning": false,
+            "warn_dose": null,
+            "warn_rung_idx": null
+          }
+        },
+        "Qwen/Qwen2.5-3B": {
+          "geodesic_top25": {
+            "degradation_dose": 0.4,
+            "degradation_rung_idx": 9,
+            "early_warning_lead_steps": 0,
+            "low_dose_alpha_perp": 1.9952331768360216,
+            "max_alpha_perp": 2.3520517427167786,
+            "mean_selectivity_ratio": 0.11407808044387373,
+            "pass_early_warning": false,
+            "warn_dose": null,
+            "warn_rung_idx": null
+          },
+          "linear_all_layer": {
+            "degradation_dose": ">max_dose",
+            "degradation_rung_idx": null,
+            "early_warning_lead_steps": 0,
+            "low_dose_alpha_perp": 1.3651607449952006,
+            "max_alpha_perp": 1.4800437273412286,
+            "mean_selectivity_ratio": 0.0022012125638964284,
+            "pass_early_warning": false,
+            "warn_dose": null,
+            "warn_rung_idx": null
+          }
+        }
+      },
+      "H1_1_verdict": "FAIL",
+      "H1_2_summary": {
+        "Qwen/Qwen2.5-1.5B": {
+          "monotonic_consolidation": true,
+          "pass_consolidation_window": true,
+          "v50_by_N": {
+            "0": 0.8536,
+            "10": 1.5534,
+            "200": 2.3911,
+            "50": 2.0734
+          },
+          "v50_ratio_N200_over_N0": 2.8012
+        },
+        "Qwen/Qwen2.5-3B": {
+          "monotonic_consolidation": true,
+          "pass_consolidation_window": true,
+          "v50_by_N": {
+            "0": 0.7056,
+            "10": 1.5566,
+            "200": 2.2666,
+            "50": 1.7995
+          },
+          "v50_ratio_N200_over_N0": 3.2123
+        }
+      },
+      "H1_2_verdict": "PASS",
+      "figures": [
+        "smp_study1_geodesic_llm_diagnostics.pdf",
+        "smp_study1_geodesic_llm_diagnostics.png"
+      ],
+      "overall_study_verdict": "FAIL",
+      "pre_sealing_audit": {
+        "early_warning_pass": true,
+        "low_dose_quadratic_exponent": 1.997,
+        "max_lockin_chi_exponent": 91.212,
+        "max_pre_bifurcation_exponent": 12.749,
+        "quadratic_law_pass": true,
+        "sham_e_perp_floor": 3.790918382834323e-08,
+        "sham_pass": true,
+        "syncytium_cfl_pass": true,
+        "vault_ledger_pass": true
+      },
+      "study_id": "SMP_STUDY1_GEODESIC_LLM"
+    },
+    "prev_hash": "f6def63c8f06605656cece2eb3e7dee6597a8f282f99aa9b10f85f4306462b36",
+    "study_id": "SMP_STUDY1_GEODESIC_LLM",
+    "timestamp_utc": "2026-11-17T19:43:46Z"
+  },
+  {
+    "entry_hash": "c3c8aedfd928ccaeca41f5dc139fdd7c6905c08c70bd011719b2ea65235a0301",
+    "entry_type": "SEALED_PREDICTION",
+    "index": 7,
+    "payload": {
+      "power": 0.92
+    },
+    "prev_hash": "05e23175fa69dda839848f88dbae6e75e9034788dec7142781d2d3e58b353111",
+    "study_id": "AUDIT_TEST",
+    "timestamp_utc": "2026-11-17T19:47:19Z"
+  },
+  {
+    "entry_hash": "6b026860f7286c810c9433a3ac2f77be5b2018ee5dce3517fd044339f9caf5ea",
+    "entry_type": "RUN_VERDICT",
+    "index": 8,
+    "payload": {
+      "status": "PASS"
+    },
+    "prev_hash": "c3c8aedfd928ccaeca41f5dc139fdd7c6905c08c70bd011719b2ea65235a0301",
+    "study_id": "AUDIT_TEST",
+    "timestamp_utc": "2026-11-17T19:47:19Z"
+  },
+  {
+    "entry_hash": "9b8b982a21fe52ae3adbe3f53f09ef1e45d9b6fe0fb11c719f43a2191301820f",
+    "entry_type": "SEALED_PREDICTION",
+    "index": 9,
+    "payload": {
+      "counter_chord_factors": [
+        0.0,
+        0.125,
+        0.1768,
+        0.25,
+        0.3536,
+        0.5,
+        0.7071,
+        1.0,
+        1.4142,
+        2.0,
+        2.8284,
+        4.0
+      ],
+      "dose_ladder_mv": [
+        0.0,
+        1.25,
+        1.7678,
+        2.5,
+        3.5355,
+        5.0,
+        7.0711,
+        10.0,
+        14.1421,
+        20.0,
+        28.2843
+      ],
+      "post_amputation_delays": [
+        0,
+        10,
+        15,
+        25,
+        50,
+        100,
+        "adult"
+      ],
+      "power_audit": {
+        "n_shards_per_rung": 250,
+        "power_H2_1": 0.9354,
+        "power_H2_2": 0.8144,
+        "power_H2_3": 0.9857,
+        "zero_event_upper_95_bound": 0.01191
+      },
+      "protocol_version": "SMP_v1.0",
+      "registered_hypotheses": {
+        "H2.1": {
+          "a_priori_power": 0.9354,
+          "min_regeneration_rate": 0.9,
+          "statement": "Arbitrary 25% tissue shards cut at random angles theta in [0, 2*pi) regenerate the two-headed morphology at >= 90% rate following a 20-step boundary-only oscillatory chord across all 3 independently trained rules."
+        },
+        "H2.2": {
+          "a_priori_power": 0.8144,
+          "exponent_warning_threshold": 2.5,
+          "min_individual_warning_rate": 0.95,
+          "statement": "Twin-free dual-phase lock-in susceptibility chi_perp warns (local exponent > 2.5) at least one sqrt(2) dose step prior to morphological attractor switching in >= 95% of individual shards (N = 250 shards per rung)."
+        },
+        "H2.3": {
+          "a_priori_power": 0.9857,
+          "min_adult_to_plastic_v50_ratio": 3.0,
+          "plastic_window_steps": [
+            10,
+            15,
+            25
+          ],
+          "statement": "Regrowth exit-cost window: counter-chord reversal cost v50 at 10-25 steps post-amputation is at least 3x lower than in settled adults across all 3 rules."
+        }
+      },
+      "study_id": "SMP_STUDY2_INDRAS_NET_SYNCYTIUM",
+      "substrate": {
+        "amputation_angles": "Uniform(0, 2*pi)",
+        "amputation_shard_fraction": 0.25,
+        "boundary_only_waveform_steps": 20,
+        "grid_shape": [
+          48,
+          48
+        ],
+        "n_shards_per_dose_rung": 250,
+        "num_channels": 8,
+        "num_independent_seeds": 3,
+        "supervised_prepattern_on_vmem_or_phi": false
+      },
+      "write_dose_mv": 28.2843
+    },
+    "prev_hash": "6b026860f7286c810c9433a3ac2f77be5b2018ee5dce3517fd044339f9caf5ea",
+    "study_id": "SMP_STUDY2_INDRAS_NET_SYNCYTIUM",
+    "timestamp_utc": "2026-11-17T19:47:19Z"
+  },
+  {
+    "entry_hash": "04bd91a65f5823e1dd9ee3c6fca1b0e42fbe0b160e4fb6488de6e8dec594e145",
+    "entry_type": "RUN_VERDICT",
+    "index": 10,
+    "payload": {
+      "H2_1_summary": {
+        "seed_0": {
+          "n_shards": 250,
+          "pass_H2_1": false,
+          "sham_2h_rate": 0.0,
+          "write_chord_2h_regen_rate": 0.0
+        },
+        "seed_1": {
+          "n_shards": 250,
+          "pass_H2_1": false,
+          "sham_2h_rate": 0.0,
+          "write_chord_2h_regen_rate": 0.0
+        },
+        "seed_2": {
+          "n_shards": 250,
+          "pass_H2_1": false,
+          "sham_2h_rate": 0.0,
+          "write_chord_2h_regen_rate": 0.0
+        }
+      },
+      "H2_1_verdict": "FAIL",
+      "H2_2_summary": {
+        "seed_0": {
+          "individual_early_warning_rate": 0.0,
+          "low_dose_alpha_perp": 2.0336,
+          "max_pop_alpha_chi": 2.0273,
+          "median_dose_lead_factor": null,
+          "pass_H2_2": false,
+          "switched_shards": 0,
+          "warned_prior_to_switch": 0
+        },
+        "seed_1": {
+          "individual_early_warning_rate": 0.0,
+          "low_dose_alpha_perp": 2.0304,
+          "max_pop_alpha_chi": 2.03,
+          "median_dose_lead_factor": null,
+          "pass_H2_2": false,
+          "switched_shards": 0,
+          "warned_prior_to_switch": 0
+        },
+        "seed_2": {
+          "individual_early_warning_rate": 0.0,
+          "low_dose_alpha_perp": 2.0319,
+          "max_pop_alpha_chi": 2.0318,
+          "median_dose_lead_factor": null,
+          "pass_H2_2": false,
+          "switched_shards": 0,
+          "warned_prior_to_switch": 0
+        }
+      },
+      "H2_2_verdict": "FAIL",
+      "H2_3_summary": {
+        "seed_0": {
+          "adult_to_plastic_ratio": 0.0,
+          "pass_H2_3": false,
+          "v50_by_delay": {
+            "0": 0.0,
+            "10": 0.0,
+            "100": 0.0,
+            "15": 0.0,
+            "25": 0.0,
+            "50": 0.0,
+            "adult": 0.0
+          },
+          "v50_min_10_to_25_steps": 0.0,
+          "v50_settled_adult": 0.0
+        },
+        "seed_1": {
+          "adult_to_plastic_ratio": 0.0,
+          "pass_H2_3": false,
+          "v50_by_delay": {
+            "0": 0.0,
+            "10": 0.0,
+            "100": 0.0,
+            "15": 0.0,
+            "25": 0.0,
+            "50": 0.0,
+            "adult": 0.0
+          },
+          "v50_min_10_to_25_steps": 0.0,
+          "v50_settled_adult": 0.0
+        },
+        "seed_2": {
+          "adult_to_plastic_ratio": 0.0,
+          "pass_H2_3": false,
+          "v50_by_delay": {
+            "0": 0.0,
+            "10": 0.0,
+            "100": 0.0,
+            "15": 0.0,
+            "25": 0.0,
+            "50": 0.0,
+            "adult": 0.0
+          },
+          "v50_min_10_to_25_steps": 0.0,
+          "v50_settled_adult": 0.0
+        }
+      },
+      "H2_3_verdict": "FAIL",
+      "figures": [
+        "smp_study2_indras_net_syncytium_diagnostics.pdf",
+        "smp_study2_indras_net_syncytium_diagnostics.png"
+      ],
+      "overall_study_verdict": "FAIL",
+      "pre_sealing_audit": {
+        "early_warning_pass": true,
+        "low_dose_quadratic_exponent": 1.997,
+        "max_lockin_chi_exponent": 91.212,
+        "max_pre_bifurcation_exponent": 12.749,
+        "quadratic_law_pass": true,
+        "sham_e_perp_floor": 3.790918382834323e-08,
+        "sham_pass": true,
+        "syncytium_cfl_pass": true,
+        "vault_ledger_pass": true
+      },
+      "study_id": "SMP_STUDY2_INDRAS_NET_SYNCYTIUM",
+      "training_summaries": [
+        {
+          "checkpoint_path": "syncytium_seed_0.pt",
+          "final_morph_loss": 0.33147,
+          "initial_morph_loss": 4.15935,
+          "loss_history_decimated": [
+            4.15935,
+            0.66845,
+            0.57267,
+            0.44312,
+            0.43353,
+            0.35188,
+            0.34196,
+            0.34593,
+            0.33921,
+            0.33677,
+            0.33394,
+            0.33285
+          ],
+          "num_epochs": 120,
+          "seed_idx": 0,
+          "vmem_or_phi_supervised": false
+        },
+        {
+          "checkpoint_path": "syncytium_seed_1.pt",
+          "final_morph_loss": 0.33519,
+          "initial_morph_loss": 4.15867,
+          "loss_history_decimated": [
+            4.15867,
+            0.65703,
+            0.53704,
+            0.52238,
+            0.39946,
+            0.35305,
+            0.34384,
+            0.33924,
+            0.34661,
+            0.34514,
+            0.37771,
+            0.33974
+          ],
+          "num_epochs": 120,
+          "seed_idx": 1,
+          "vmem_or_phi_supervised": false
+        },
+        {
+          "checkpoint_path": "syncytium_seed_2.pt",
+          "final_morph_loss": 0.24193,
+          "initial_morph_loss": 3.25231,
+          "loss_history_decimated": [
+            3.25231,
+            0.77439,
+            0.6523,
+            0.43746,
+            0.42654,
+            0.33355,
+            0.3008,
+            0.26956,
+            0.26328,
+            0.25356,
+            0.24265,
+            0.23953
+          ],
+          "num_epochs": 120,
+          "seed_idx": 2,
+          "vmem_or_phi_supervised": false
+        }
+      ]
+    },
+    "prev_hash": "9b8b982a21fe52ae3adbe3f53f09ef1e45d9b6fe0fb11c719f43a2191301820f",
+    "study_id": "SMP_STUDY2_INDRAS_NET_SYNCYTIUM",
+    "timestamp_utc": "2026-11-17T19:50:41Z"
+  },
+  {
+    "entry_hash": "de947cc1fc664c37335b412e15841b16ac139c91efc38788148944ba6230aee7",
+    "entry_type": "SEALED_PREDICTION",
+    "index": 11,
+    "payload": {
+      "power": 0.96
+    },
+    "prev_hash": "04bd91a65f5823e1dd9ee3c6fca1b0e42fbe0b160e4fb6488de6e8dec594e145",
+    "study_id": "AUDIT_TEST",
+    "timestamp_utc": "2026-11-17T20:47:39Z"
+  },
+  {
+    "entry_hash": "a09310c092cf631a2dd6abe6f19550d0ad4a4d4f9daef5ef8882daf8283b2820",
+    "entry_type": "RUN_VERDICT",
+    "index": 12,
+    "payload": {
+      "status": "PASS"
+    },
+    "prev_hash": "de947cc1fc664c37335b412e15841b16ac139c91efc38788148944ba6230aee7",
+    "study_id": "AUDIT_TEST",
+    "timestamp_utc": "2026-11-17T20:47:39Z"
+  },
+  {
+    "entry_hash": "7fb0691e68771b73496e7c87a4423a0cc812033b9f98cfc57fa6cc1e1ae5f162",
+    "entry_type": "SEALED_PREDICTION",
+    "index": 13,
+    "payload": {
+      "calibration_certificate": {
+        "baseline_assay_signal": 2.0,
+        "calibrated_dose_ladder": [
+          0.0,
+          1.353552,
+          1.914212,
+          2.707105,
+          3.828425,
+          5.41421,
+          7.656849,
+          10.82842,
+          15.313698,
+          21.65684,
+          30.627397
+        ],
+        "calibration_status": "PASS",
+        "estimated_s_crit_ec50": 10.82842,
+        "pilot_probe_records": [
+          {
+            "dose": 1.25,
+            "e_perp": 0.1916485339018937,
+            "transition_fraction": 0.0
+          },
+          {
+            "dose": 2.5,
+            "e_perp": 0.7767433173665673,
+            "transition_fraction": 0.0
+          },
+          {
+            "dose": 5.0,
+            "e_perp": 3.7999155830955558,
+            "transition_fraction": 0.0
+          },
+          {
+            "dose": 7.0711,
+            "e_perp": 12.620383612346199,
+            "transition_fraction": 0.0
+          },
+          {
+            "dose": 10.0,
+            "e_perp": 75.35540329137643,
+            "transition_fraction": 0.375
+          },
+          {
+            "dose": 14.1421,
+            "e_perp": 541.2515853711584,
+            "transition_fraction": 1.0
+          },
+          {
+            "dose": 20.0,
+            "e_perp": 2346.526426714235,
+            "transition_fraction": 1.0
+          },
+          {
+            "dose": 28.2843,
+            "e_perp": 6216.894920478815,
+            "transition_fraction": 1.0
+          }
+        ],
+        "positive_control_max_effect": 1.0,
+        "sham_e_perp_floor": 1.9010507681457956e-06
+      },
+      "counter_chord_factors": [
+        0.0,
+        0.125,
+        0.1768,
+        0.25,
+        0.3536,
+        0.5,
+        0.7071,
+        1.0,
+        1.4142,
+        2.0,
+        2.8284,
+        4.0
+      ],
+      "dose_ladder": [
+        0.0,
+        1.25,
+        1.767767,
+        2.5,
+        3.535534,
+        5.0,
+        7.071068,
+        10.0,
+        14.142136,
+        20.0,
+        28.284271
+      ],
+      "post_amputation_delays": [
+        0,
+        10,
+        15,
+        25,
+        50,
+        100,
+        "adult"
+      ],
+      "power_audit": {
+        "n_shards_per_rung": 250,
+        "power_H2_1": 0.9949,
+        "power_H2_2": 0.8956,
+        "power_H2_3": 0.989,
+        "zero_event_upper_95_bound": 0.01191
+      },
+      "protocol_version": "SMP_v2.0_Calibrated_Hopfield",
+      "registered_hypotheses": {
+        "H2.1": {
+          "a_priori_power": 0.9949,
+          "min_regeneration_rate": 0.9,
+          "statement": "Arbitrary 25% random shards (16 of 64 sites retained) regenerate the target M_1 attractor at >= 90% rate following a 20-step chord across all 3 independently trained rules."
+        },
+        "H2.2": {
+          "a_priori_power": 0.8956,
+          "exponent_warning_threshold": 2.5,
+          "min_individual_warning_rate": 0.95,
+          "statement": "Twin-free dual-phase lock-in susceptibility chi_perp warns (local exponent > 2.5) at least one sqrt(2) dose step prior to attractor switching in >= 95% of individual shards."
+        },
+        "H2.3": {
+          "a_priori_power": 0.989,
+          "min_adult_to_plastic_v50_ratio": 3.0,
+          "plastic_window_steps": [
+            10,
+            15,
+            25
+          ],
+          "statement": "Regrowth exit-cost window: counter-chord reversal cost v50 at 10-25 steps post-amputation is at least 3x lower than in settled adults across all 3 rules."
+        }
+      },
+      "study_id": "SMP_V2_STUDY2_HOPFIELD_ATTRACTOR",
+      "substrate": {
+        "amputation_shard_fraction": 0.25,
+        "architecture": "ContinuousHopfieldAttractorStep",
+        "n_shards_per_dose_rung": 250,
+        "num_independent_seeds": 3,
+        "s_crit_saddle": 10.0,
+        "state_dim": 64
+      },
+      "write_dose": 28.284271
+    },
+    "prev_hash": "a09310c092cf631a2dd6abe6f19550d0ad4a4d4f9daef5ef8882daf8283b2820",
+    "study_id": "SMP_V2_STUDY2_HOPFIELD_ATTRACTOR",
+    "timestamp_utc": "2026-11-17T20:47:40Z"
+  },
+  {
+    "entry_hash": "e7e14772ca9b1cb75f5647ee1d73e21b7621a90881edd196a0f884018d8416fd",
+    "entry_type": "RUN_VERDICT",
+    "index": 14,
+    "payload": {
+      "H2_1_summary": {
+        "seed_0": {
+          "n_shards": 250,
+          "pass_H2_1": true,
+          "sham_2h_rate": 0.0,
+          "write_chord_2h_regen_rate": 1.0
+        },
+        "seed_1": {
+          "n_shards": 250,
+          "pass_H2_1": true,
+          "sham_2h_rate": 0.0,
+          "write_chord_2h_regen_rate": 1.0
+        },
+        "seed_2": {
+          "n_shards": 250,
+          "pass_H2_1": true,
+          "sham_2h_rate": 0.0,
+          "write_chord_2h_regen_rate": 1.0
+        }
+      },
+      "H2_1_verdict": "PASS",
+      "H2_2_summary": {
+        "seed_0": {
+          "individual_early_warning_rate": 1.0,
+          "low_dose_alpha_perp": 2.0075,
+          "max_pop_alpha_chi": 5.6869,
+          "max_pop_alpha_perp": 5.6891,
+          "median_dose_lead_factor": 2.8284,
+          "pass_H2_2": true,
+          "switched_shards": 250,
+          "warned_prior_to_switch": 250
+        },
+        "seed_1": {
+          "individual_early_warning_rate": 1.0,
+          "low_dose_alpha_perp": 2.0077,
+          "max_pop_alpha_chi": 5.6887,
+          "max_pop_alpha_perp": 5.6891,
+          "median_dose_lead_factor": 2.8284,
+          "pass_H2_2": true,
+          "switched_shards": 250,
+          "warned_prior_to_switch": 250
+        },
+        "seed_2": {
+          "individual_early_warning_rate": 1.0,
+          "low_dose_alpha_perp": 2.0078,
+          "max_pop_alpha_chi": 5.6887,
+          "max_pop_alpha_perp": 5.6891,
+          "median_dose_lead_factor": 2.8284,
+          "pass_H2_2": true,
+          "switched_shards": 250,
+          "warned_prior_to_switch": 250
+        }
+      },
+      "H2_2_verdict": "PASS",
+      "H2_3_summary": {
+        "seed_0": {
+          "adult_to_plastic_ratio": 4.4062,
+          "pass_H2_3": true,
+          "v50_by_delay": {
+            "0": 0.5814,
+            "10": 0.4176,
+            "100": 1.6226,
+            "15": 0.3877,
+            "25": 0.4265,
+            "50": 0.8603,
+            "adult": 1.7083
+          },
+          "v50_min_10_to_25_steps": 0.3877,
+          "v50_settled_adult": 1.7083
+        },
+        "seed_1": {
+          "adult_to_plastic_ratio": 4.5257,
+          "pass_H2_3": true,
+          "v50_by_delay": {
+            "0": 0.5808,
+            "10": 0.4187,
+            "100": 1.6283,
+            "15": 0.3772,
+            "25": 0.4265,
+            "50": 0.8603,
+            "adult": 1.7071
+          },
+          "v50_min_10_to_25_steps": 0.3772,
+          "v50_settled_adult": 1.7071
+        },
+        "seed_2": {
+          "adult_to_plastic_ratio": 4.5193,
+          "pass_H2_3": true,
+          "v50_by_delay": {
+            "0": 0.5808,
+            "10": 0.4172,
+            "100": 1.6445,
+            "15": 0.378,
+            "25": 0.4265,
+            "50": 0.8616,
+            "adult": 1.7083
+          },
+          "v50_min_10_to_25_steps": 0.378,
+          "v50_settled_adult": 1.7083
+        }
+      },
+      "H2_3_verdict": "PASS",
+      "calibration_certificate": {
+        "baseline_assay_signal": 2.0,
+        "calibrated_dose_ladder": [
+          0.0,
+          1.353552,
+          1.914212,
+          2.707105,
+          3.828425,
+          5.41421,
+          7.656849,
+          10.82842,
+          15.313698,
+          21.65684,
+          30.627397
+        ],
+        "calibration_status": "PASS",
+        "estimated_s_crit_ec50": 10.82842,
+        "pilot_probe_records": [
+          {
+            "dose": 1.25,
+            "e_perp": 0.1916485339018937,
+            "transition_fraction": 0.0
+          },
+          {
+            "dose": 2.5,
+            "e_perp": 0.7767433173665673,
+            "transition_fraction": 0.0
+          },
+          {
+            "dose": 5.0,
+            "e_perp": 3.7999155830955558,
+            "transition_fraction": 0.0
+          },
+          {
+            "dose": 7.0711,
+            "e_perp": 12.620383612346199,
+            "transition_fraction": 0.0
+          },
+          {
+            "dose": 10.0,
+            "e_perp": 75.35540329137643,
+            "transition_fraction": 0.375
+          },
+          {
+            "dose": 14.1421,
+            "e_perp": 541.2515853711584,
+            "transition_fraction": 1.0
+          },
+          {
+            "dose": 20.0,
+            "e_perp": 2346.526426714235,
+            "transition_fraction": 1.0
+          },
+          {
+            "dose": 28.2843,
+            "e_perp": 6216.894920478815,
+            "transition_fraction": 1.0
+          }
+        ],
+        "positive_control_max_effect": 1.0,
+        "sham_e_perp_floor": 1.9010507681457956e-06
+      },
+      "figures": [
+        "smp_v2_study2_hopfield_attractor_diagnostics.pdf",
+        "smp_v2_study2_hopfield_attractor_diagnostics.png"
+      ],
+      "overall_study_verdict": "PASS",
+      "pre_sealing_audit": {
+        "calibrated_s_crit": 8.325714,
+        "early_warning_pass": true,
+        "hopfield_25pct_shard_regen_rate": 1.0,
+        "low_dose_quadratic_exponent": 2.004,
+        "max_lockin_chi_exponent": 5.685,
+        "max_pre_bifurcation_exponent": 5.694,
+        "quadratic_law_pass": true,
+        "sham_e_perp_floor": 1.9319889680084175e-06,
+        "sham_pass": true,
+        "syncytium_cfl_pass": true,
+        "vault_ledger_pass": true
+      },
+      "study_id": "SMP_V2_STUDY2_HOPFIELD_ATTRACTOR",
+      "training_summaries": [
+        {
+          "checkpoint_path": "hopfield_attractor_seed_0.pt",
+          "final_mse_loss": 0.000149,
+          "initial_mse_loss": 0.002459,
+          "loss_history_decimated": [
+            0.002459,
+            0.000225,
+            0.00016,
+            0.000154,
+            0.000151,
+            0.000147,
+            0.000144,
+            0.00015
+          ],
+          "num_epochs": 80,
+          "seed_idx": 0
+        },
+        {
+          "checkpoint_path": "hopfield_attractor_seed_1.pt",
+          "final_mse_loss": 0.000146,
+          "initial_mse_loss": 0.002147,
+          "loss_history_decimated": [
+            0.002147,
+            0.000211,
+            0.000159,
+            0.000154,
+            0.000153,
+            0.000148,
+            0.000153,
+            0.000158
+          ],
+          "num_epochs": 80,
+          "seed_idx": 1
+        },
+        {
+          "checkpoint_path": "hopfield_attractor_seed_2.pt",
+          "final_mse_loss": 0.000149,
+          "initial_mse_loss": 0.001673,
+          "loss_history_decimated": [
+            0.001673,
+            0.000187,
+            0.000165,
+            0.000156,
+            0.000148,
+            0.000147,
+            0.000147,
+            0.000149
+          ],
+          "num_epochs": 80,
+          "seed_idx": 2
+        }
+      ]
+    },
+    "prev_hash": "7fb0691e68771b73496e7c87a4423a0cc812033b9f98cfc57fa6cc1e1ae5f162",
+    "study_id": "SMP_V2_STUDY2_HOPFIELD_ATTRACTOR",
+    "timestamp_utc": "2026-11-17T20:48:07Z"
+  },
+  {
+    "entry_hash": "7a678ddfaf62ee3826817687ce92fecb39185762667919f0c897034d3add000d",
+    "entry_type": "SEALED_PREDICTION",
+    "index": 15,
+    "payload": {
+      "power": 0.96
+    },
+    "prev_hash": "e7e14772ca9b1cb75f5647ee1d73e21b7621a90881edd196a0f884018d8416fd",
+    "study_id": "AUDIT_TEST",
+    "timestamp_utc": "2026-11-17T21:01:36Z"
+  },
+  {
+    "entry_hash": "59bbfe3aa87a06ab370c184b6d62ff930615e0bbcc1601596ca151faf1d616ca",
+    "entry_type": "RUN_VERDICT",
+    "index": 16,
+    "payload": {
+      "status": "PASS"
+    },
+    "prev_hash": "7a678ddfaf62ee3826817687ce92fecb39185762667919f0c897034d3add000d",
+    "study_id": "AUDIT_TEST",
+    "timestamp_utc": "2026-11-17T21:01:36Z"
+  },
+  {
+    "entry_hash": "b7c760c1aaf718e8cefa5051c9626b97c10bb0c4d8f149314ba6628aef87e1df",
+    "entry_type": "SEALED_PREDICTION",
+    "index": 17,
+    "payload": {
+      "calibrated_s_crit_kv": 0.2,
+      "dose_ladder_sqrt2_10steps": [
+        0.0,
+        0.025,
+        0.035355,
+        0.05,
+        0.070711,
+        0.1,
+        0.141421,
+        0.2,
+        0.282843,
+        0.4,
+        0.565685
+      ],
+      "interventions": [
+        "baseline_linear_all_layers_kv_rollout",
+        "geodesic_subspace_top25pct_attribution_layers_kv_rollout"
+      ],
+      "kv_rollout_steps": 6,
+      "lockin_dither": {
+        "dither_amplitude": 0.004,
+        "harmonic_cycles": 3,
+        "time_steps_td": 16
+      },
+      "models": [
+        "Qwen/Qwen2.5-1.5B",
+        "Qwen/Qwen2.5-3B"
+      ],
+      "precision": "strict_ieee754_float32_activations_float64_accumulators",
+      "protocol_version": "SMP_v2.0_Calibrated",
+      "registered_hypotheses": {
+        "H1.1": {
+          "a_priori_power": 0.9573,
+          "alpha": 0.05,
+          "exponent_warning_threshold": 2.5,
+          "gsm8k_degradation_tolerance": 0.05,
+          "min_lead_steps": 1,
+          "statement": "Under autoregressive KV-cache rollout, orthogonal exponent alpha_perp (and twin-free lock-in exponent alpha_chi_perp) breaches 2.5 at least one sqrt(2) dose step before held-out multi-token GSM8K or WikiText-2 functional degradation (>5% drop/rise) in both Qwen2.5-1.5B and Qwen2.5-3B, and GeodesicSubspaceIntervention (top-25% layers) achieves >= 10x higher task subspace selectivity (E_parallel / E_total) than all-layer linear patches.",
+          "wikitext_ppl_rel_degradation_tolerance": 0.05
+        },
+        "H1.2": {
+          "a_priori_power": 0.9495,
+          "alpha": 0.05,
+          "consolidation_steps_N": [
+            0,
+            10,
+            50,
+            200
+          ],
+          "counter_dose_factors": [
+            0.0,
+            0.125,
+            0.176777,
+            0.25,
+            0.353553,
+            0.5,
+            0.707107,
+            1.0,
+            1.414214,
+            2.0,
+            2.828427,
+            4.0,
+            5.656854
+          ],
+          "min_v50_ratio_200_vs_0": 2.0,
+          "statement": "Applying a rank-1 factual weight edit and running N in {0, 10, 50, 200} fine-tuning steps produces a consolidation window where the counter-dose v50 required to reverse 50% of the edit increases monotonically with N and satisfies v50(N=200) >= 2.0 * v50(N=0) in both models."
+        }
+      },
+      "study_id": "SMP_V2_STUDY1_KV_GEODESIC_LLM",
+      "tangent_subspace_rank_k": 4
+    },
+    "prev_hash": "59bbfe3aa87a06ab370c184b6d62ff930615e0bbcc1601596ca151faf1d616ca",
+    "study_id": "SMP_V2_STUDY1_KV_GEODESIC_LLM",
+    "timestamp_utc": "2026-11-17T21:01:41Z"
+  },
+  {
+    "entry_hash": "fb63893289c91ebc4d212f7234d69b09f8b6f83532e9526cd38bf746fd77df94",
+    "entry_type": "SEALED_PREDICTION",
+    "index": 18,
+    "payload": {
+      "power": 0.96
+    },
+    "prev_hash": "b7c760c1aaf718e8cefa5051c9626b97c10bb0c4d8f149314ba6628aef87e1df",
+    "study_id": "AUDIT_TEST",
+    "timestamp_utc": "2026-11-17T21:14:32Z"
+  },
+  {
+    "entry_hash": "ae1e78026a4265b0fcf726581d3a1d4f3e950dee202160870a85475e038c2d2e",
+    "entry_type": "RUN_VERDICT",
+    "index": 19,
+    "payload": {
+      "status": "PASS"
+    },
+    "prev_hash": "fb63893289c91ebc4d212f7234d69b09f8b6f83532e9526cd38bf746fd77df94",
+    "study_id": "AUDIT_TEST",
+    "timestamp_utc": "2026-11-17T21:14:32Z"
+  },
+  {
+    "entry_hash": "6fc7db3543434787e5c814624dc2314822ba7d918f47491aa6d12a0811be3ee3",
+    "entry_type": "SEALED_PREDICTION",
+    "index": 20,
+    "payload": {
+      "power": 0.96
+    },
+    "prev_hash": "ae1e78026a4265b0fcf726581d3a1d4f3e950dee202160870a85475e038c2d2e",
+    "study_id": "AUDIT_TEST",
+    "timestamp_utc": "2026-11-17T21:21:04Z"
+  },
+  {
+    "entry_hash": "17a6c30642818da0f76547d0963817632503a455db1c1aed910f9e4d1f27c43f",
+    "entry_type": "RUN_VERDICT",
+    "index": 21,
+    "payload": {
+      "status": "PASS"
+    },
+    "prev_hash": "6fc7db3543434787e5c814624dc2314822ba7d918f47491aa6d12a0811be3ee3",
+    "study_id": "AUDIT_TEST",
+    "timestamp_utc": "2026-11-17T21:21:04Z"
+  },
+  {
+    "entry_hash": "fe3cd019fe3fd363234395ad8f1537fcb555735666131ce2dc09f8798f0b17f1",
+    "entry_type": "RUN_VERDICT",
+    "index": 22,
+    "payload": {
+      "H1_1_summary": {
+        "Qwen/Qwen2.5-1.5B": {
+          "geodesic_top25": {
+            "degradation_dose": 0.2,
+            "degradation_rung_idx": 7,
+            "early_warning_lead_steps": 1,
+            "low_dose_alpha_perp": 2.0078,
+            "max_alpha_chi_perp": 5.6853,
+            "max_alpha_perp": 5.6893,
+            "mean_selectivity_ratio": 0.7469,
+            "pass_early_warning": true,
+            "warn_dose": 0.141421,
+            "warn_rung_idx": 6
+          },
+          "linear_all_layer": {
+            "degradation_dose": 0.141421,
+            "degradation_rung_idx": 6,
+            "early_warning_lead_steps": 1,
+            "low_dose_alpha_perp": 2.0311,
+            "max_alpha_chi_perp": 5.6805,
+            "max_alpha_perp": 5.6893,
+            "mean_selectivity_ratio": 0.0247,
+            "pass_early_warning": true,
+            "warn_dose": 0.1,
+            "warn_rung_idx": 5
+          }
+        },
+        "Qwen/Qwen2.5-3B": {
+          "geodesic_top25": {
+            "degradation_dose": 0.2,
+            "degradation_rung_idx": 7,
+            "early_warning_lead_steps": 1,
+            "low_dose_alpha_perp": 2.0078,
+            "max_alpha_chi_perp": 5.6856,
+            "max_alpha_perp": 5.6893,
+            "mean_selectivity_ratio": 0.7399,
+            "pass_early_warning": true,
+            "warn_dose": 0.141421,
+            "warn_rung_idx": 6
+          },
+          "linear_all_layer": {
+            "degradation_dose": 0.141421,
+            "degradation_rung_idx": 6,
+            "early_warning_lead_steps": 1,
+            "low_dose_alpha_perp": 2.0311,
+            "max_alpha_chi_perp": 5.6804,
+            "max_alpha_perp": 5.6893,
+            "mean_selectivity_ratio": 0.0256,
+            "pass_early_warning": true,
+            "warn_dose": 0.1,
+            "warn_rung_idx": 5
+          }
+        }
+      },
+      "H1_1_verdict": "PASS",
+      "H1_2_summary": {
+        "Qwen/Qwen2.5-1.5B": {
+          "monotonic_consolidation": true,
+          "pass_consolidation_window": true,
+          "v50_by_N": {
+            "0": 0.8536,
+            "10": 1.5534,
+            "200": 2.3911,
+            "50": 2.0734
+          },
+          "v50_ratio_N200_over_N0": 2.8012
+        },
+        "Qwen/Qwen2.5-3B": {
+          "monotonic_consolidation": true,
+          "pass_consolidation_window": true,
+          "v50_by_N": {
+            "0": 0.7056,
+            "10": 1.5566,
+            "200": 2.2666,
+            "50": 1.7995
+          },
+          "v50_ratio_N200_over_N0": 3.2123
+        }
+      },
+      "H1_2_verdict": "PASS",
+      "figures": [
+        "smp_v2_study1_geodesic_llm_diagnostics.pdf",
+        "smp_v2_study1_geodesic_llm_diagnostics.png"
+      ],
+      "overall_study_verdict": "PASS",
+      "pre_sealing_audit": {
+        "calibrated_s_crit": 8.325714,
+        "early_warning_pass": true,
+        "hopfield_25pct_shard_regen_rate": 1.0,
+        "low_dose_quadratic_exponent": 2.004,
+        "max_lockin_chi_exponent": 5.685,
+        "max_pre_bifurcation_exponent": 5.694,
+        "quadratic_law_pass": true,
+        "sham_e_perp_floor": 1.9319889680084175e-06,
+        "sham_pass": true,
+        "syncytium_cfl_pass": true,
+        "vault_ledger_pass": true
+      },
+      "study_id": "SMP_V2_STUDY1_KV_GEODESIC_LLM"
+    },
+    "prev_hash": "17a6c30642818da0f76547d0963817632503a455db1c1aed910f9e4d1f27c43f",
+    "study_id": "SMP_V2_STUDY1_KV_GEODESIC_LLM",
+    "timestamp_utc": "2026-11-17T21:22:40Z"
+  },
+  {
+    "entry_hash": "e2ce4df64594b79aa1387dabf0e29f9f3fe439a67b5374de107c5ccda2c073c3",
+    "entry_type": "SEALED_PREDICTION",
+    "index": 23,
+    "payload": {
+      "power": 0.96
+    },
+    "prev_hash": "fe3cd019fe3fd363234395ad8f1537fcb555735666131ce2dc09f8798f0b17f1",
+    "study_id": "AUDIT_TEST",
+    "timestamp_utc": "2026-11-18T17:34:58Z"
+  },
+  {
+    "entry_hash": "fbbacd77ad541f791911abe7645cdb7d3c7892c0191a6d56f7651bd14301b114",
+    "entry_type": "RUN_VERDICT",
+    "index": 24,
+    "payload": {
+      "status": "PASS"
+    },
+    "prev_hash": "e2ce4df64594b79aa1387dabf0e29f9f3fe439a67b5374de107c5ccda2c073c3",
+    "study_id": "AUDIT_TEST",
+    "timestamp_utc": "2026-11-18T17:34:58Z"
+  },
+  {
+    "entry_hash": "9644190a44553d75817569f476b6b719fbbb04e78aa28c491ddb40a3c577b78a",
+    "entry_type": "SEALED_PREDICTION",
+    "index": 25,
+    "payload": {
+      "calibration_certificate": {
+        "baseline_assay_signal": 2.0,
+        "calibrated_dose_ladder": [
+          0.0,
+          1.066944,
+          1.508886,
+          2.133887,
+          3.017773,
+          4.267775,
+          6.035545,
+          8.53555,
+          12.071091,
+          17.0711,
+          24.142181
+        ],
+        "calibration_status": "PASS",
+        "estimated_s_crit_ec50": 8.53555,
+        "pilot_probe_records": [
+          {
+            "dose": 1.25,
+            "e_perp": 6.569659116206092e-05,
+            "transition_fraction": 0.0
+          },
+          {
+            "dose": 2.5,
+            "e_perp": 0.0002413492131499189,
+            "transition_fraction": 0.0
+          },
+          {
+            "dose": 5.0,
+            "e_perp": 0.0009525542694543308,
+            "transition_fraction": 0.0
+          },
+          {
+            "dose": 7.0711,
+            "e_perp": 0.0020295690119046745,
+            "transition_fraction": 0.0
+          },
+          {
+            "dose": 10.0,
+            "e_perp": 0.007297046345572197,
+            "transition_fraction": 1.0
+          },
+          {
+            "dose": 14.1421,
+            "e_perp": 0.019604965048040074,
+            "transition_fraction": 1.0
+          },
+          {
+            "dose": 20.0,
+            "e_perp": 0.03899975546576589,
+            "transition_fraction": 1.0
+          },
+          {
+            "dose": 28.2843,
+            "e_perp": 0.06898649464390502,
+            "transition_fraction": 1.0
+          }
+        ],
+        "positive_control_max_effect": 1.0,
+        "sham_e_perp_floor": 7.607070185292447e-06
+      },
+      "counter_chord_factors": [
+        0.0,
+        0.05,
+        0.1,
+        0.15,
+        0.2,
+        0.25,
+        0.3,
+        0.35,
+        0.4,
+        0.45,
+        0.5,
+        0.6,
+        0.7071,
+        0.85,
+        1.0,
+        1.4142,
+        2.0
+      ],
+      "dose_ladder": [
+        0.0,
+        1.066944,
+        1.508886,
+        2.133887,
+        3.017773,
+        4.267775,
+        6.035545,
+        8.53555,
+        12.071091,
+        17.0711,
+        24.142181
+      ],
+      "post_amputation_delays": [
+        0,
+        10,
+        15,
+        25,
+        50,
+        100,
+        "adult"
+      ],
+      "power_audit": {
+        "n_shards_per_rung": 250,
+        "power_H2_1": 0.9949,
+        "power_H2_2": 0.8956,
+        "power_H2_3": 0.989,
+        "zero_event_upper_95_bound": 0.01191
+      },
+      "protocol_version": "SMP_v3.0_Pure_Emergent_Hopfield",
+      "registered_hypotheses": {
+        "H2.1": {
+          "a_priori_power": 0.9949,
+          "min_regeneration_rate": 0.9,
+          "statement": "Under pure continuous Hopfield ODE dynamics, arbitrary 25% random shards (16/64 retained coordinates) regenerate target basin M_1 at >= 90% rate following write chord across 3 seeds with 0% sham false switching."
+        },
+        "H2.2": {
+          "a_priori_power": 0.8956,
+          "exponent_warning_threshold": 2.5,
+          "min_individual_warning_rate": 0.95,
+          "statement": "Twin-free dual-phase lock-in susceptibility chi_perp warns (local exponent > 2.5) at least one sqrt(2) dose step prior to attractor switching in >= 95% of individual shards."
+        },
+        "H2.3": {
+          "a_priori_power": 0.989,
+          "min_adult_to_plastic_v50_ratio": 3.0,
+          "plastic_window_steps": [
+            10,
+            15,
+            25
+          ],
+          "statement": "Unscaled regrowth exit-cost window: counter-chord reversal cost v50 at tau in {10, 15, 25} steps post-amputation is at least 3x lower than in settled adults (v50(adult) / min_v50(10..25) >= 3.0)."
+        }
+      },
+      "study_id": "SMP_V3_STUDY2_EMERGENT_HOPFIELD",
+      "substrate": {
+        "amputation_shard_fraction": 0.25,
+        "architecture": "ContinuousHopfieldAttractorStep_PureODE",
+        "calibrated_ec50": 8.53555,
+        "n_shards_per_dose_rung": 250,
+        "num_independent_seeds": 3,
+        "state_dim": 64
+      },
+      "write_dose": 24.142181
+    },
+    "prev_hash": "fbbacd77ad541f791911abe7645cdb7d3c7892c0191a6d56f7651bd14301b114",
+    "study_id": "SMP_V3_STUDY2_EMERGENT_HOPFIELD",
+    "timestamp_utc": "2026-11-18T17:34:59Z"
+  },
+  {
+    "entry_hash": "d4a61acec3f4fa0c90f34d66f764dc772f7b9c1c024f7701da4b43afa7157747",
+    "entry_type": "RUN_VERDICT",
+    "index": 26,
+    "payload": {
+      "H2_1_summary": {
+        "seed_0": {
+          "n_shards": 250,
+          "pass_H2_1": true,
+          "sham_2h_rate": 0.0,
+          "write_chord_2h_regen_rate": 1.0
+        },
+        "seed_1": {
+          "n_shards": 250,
+          "pass_H2_1": true,
+          "sham_2h_rate": 0.0,
+          "write_chord_2h_regen_rate": 1.0
+        },
+        "seed_2": {
+          "n_shards": 250,
+          "pass_H2_1": true,
+          "sham_2h_rate": 0.0,
+          "write_chord_2h_regen_rate": 1.0
+        }
+      },
+      "H2_1_verdict": "PASS",
+      "H2_2_summary": {
+        "seed_0": {
+          "goodhart_spectator_m2": {
+            "goodhart_elasticity": 0.6044,
+            "goodhart_overoptimization_divergence": 0.0837,
+            "goodhart_tipping_dose_s_gh": 8.53555,
+            "goodhart_tipping_rung": 7,
+            "lead_rungs_before_goodhart": -2,
+            "orthogonal_warning_dose_s_warn": 17.0711,
+            "orthogonal_warning_rung": 9,
+            "utility_retention_at_max_dose": 0.4911,
+            "warned_before_goodhart": false
+          },
+          "individual_early_warning_rate": 0.656,
+          "low_dose_alpha_perp": 1.862,
+          "max_pop_alpha_chi": 6.7718,
+          "max_pop_alpha_perp": 6.2985,
+          "median_dose_lead_factor": 4.0,
+          "pass_H2_2": false,
+          "sham_e_perp_floor": 7.346753615349675e-06,
+          "switched_shards": 250,
+          "warned_prior_to_switch": 164
+        },
+        "seed_1": {
+          "goodhart_spectator_m2": {
+            "goodhart_elasticity": 0.6068,
+            "goodhart_overoptimization_divergence": 0.0843,
+            "goodhart_tipping_dose_s_gh": 8.53555,
+            "goodhart_tipping_rung": 7,
+            "lead_rungs_before_goodhart": -2,
+            "orthogonal_warning_dose_s_warn": 17.0711,
+            "orthogonal_warning_rung": 9,
+            "utility_retention_at_max_dose": 0.4885,
+            "warned_before_goodhart": false
+          },
+          "individual_early_warning_rate": 0.724,
+          "low_dose_alpha_perp": 1.8638,
+          "max_pop_alpha_chi": 5.0431,
+          "max_pop_alpha_perp": 5.169,
+          "median_dose_lead_factor": 5.6569,
+          "pass_H2_2": false,
+          "sham_e_perp_floor": 7.4540019262944e-06,
+          "switched_shards": 250,
+          "warned_prior_to_switch": 181
+        },
+        "seed_2": {
+          "goodhart_spectator_m2": {
+            "goodhart_elasticity": 0.6131,
+            "goodhart_overoptimization_divergence": 0.0856,
+            "goodhart_tipping_dose_s_gh": 8.53555,
+            "goodhart_tipping_rung": 7,
+            "lead_rungs_before_goodhart": -3,
+            "orthogonal_warning_dose_s_warn": 24.142181,
+            "orthogonal_warning_rung": 10,
+            "utility_retention_at_max_dose": 0.482,
+            "warned_before_goodhart": false
+          },
+          "individual_early_warning_rate": 0.812,
+          "low_dose_alpha_perp": 2.0072,
+          "max_pop_alpha_chi": 3.7235,
+          "max_pop_alpha_perp": 3.7544,
+          "median_dose_lead_factor": 5.6569,
+          "pass_H2_2": false,
+          "sham_e_perp_floor": 7.448951316452055e-06,
+          "switched_shards": 250,
+          "warned_prior_to_switch": 203
+        }
+      },
+      "H2_2_verdict": "FAIL",
+      "H2_3_summary": {
+        "seed_0": {
+          "adult_to_plastic_ratio": 1.0003,
+          "adult_to_tau0_ratio": 1.4541,
+          "norm_by_delay": {
+            "0": 4.1353,
+            "10": 6.7843,
+            "100": 8.1168,
+            "15": 7.5125,
+            "25": 7.9963,
+            "50": 8.1147,
+            "adult": 8.1169
+          },
+          "pass_H2_3": false,
+          "v50_at_tau0": 0.2235,
+          "v50_by_delay": {
+            "0": 0.2235,
+            "10": 0.3249,
+            "100": 0.325,
+            "15": 0.325,
+            "25": 0.325,
+            "50": 0.325,
+            "adult": 0.325
+          },
+          "v50_min_10_to_25_steps": 0.3249,
+          "v50_settled_adult": 0.325
+        },
+        "seed_1": {
+          "adult_to_plastic_ratio": 1.0,
+          "adult_to_tau0_ratio": 1.4693,
+          "norm_by_delay": {
+            "0": 4.1414,
+            "10": 6.7831,
+            "100": 8.123,
+            "15": 7.513,
+            "25": 8.0004,
+            "50": 8.1208,
+            "adult": 8.123
+          },
+          "pass_H2_3": false,
+          "v50_at_tau0": 0.2212,
+          "v50_by_delay": {
+            "0": 0.2212,
+            "10": 0.325,
+            "100": 0.325,
+            "15": 0.325,
+            "25": 0.325,
+            "50": 0.325,
+            "adult": 0.325
+          },
+          "v50_min_10_to_25_steps": 0.325,
+          "v50_settled_adult": 0.325
+        },
+        "seed_2": {
+          "adult_to_plastic_ratio": 1.0006,
+          "adult_to_tau0_ratio": 1.4659,
+          "norm_by_delay": {
+            "0": 4.1477,
+            "10": 6.7847,
+            "100": 8.1199,
+            "15": 7.5125,
+            "25": 7.998,
+            "50": 8.1177,
+            "adult": 8.1199
+          },
+          "pass_H2_3": false,
+          "v50_at_tau0": 0.2217,
+          "v50_by_delay": {
+            "0": 0.2217,
+            "10": 0.3248,
+            "100": 0.325,
+            "15": 0.325,
+            "25": 0.325,
+            "50": 0.325,
+            "adult": 0.325
+          },
+          "v50_min_10_to_25_steps": 0.3248,
+          "v50_settled_adult": 0.325
+        }
+      },
+      "H2_3_verdict": "FAIL",
+      "calibration_certificate": {
+        "baseline_assay_signal": 2.0,
+        "calibrated_dose_ladder": [
+          0.0,
+          1.066944,
+          1.508886,
+          2.133887,
+          3.017773,
+          4.267775,
+          6.035545,
+          8.53555,
+          12.071091,
+          17.0711,
+          24.142181
+        ],
+        "calibration_status": "PASS",
+        "estimated_s_crit_ec50": 8.53555,
+        "pilot_probe_records": [
+          {
+            "dose": 1.25,
+            "e_perp": 6.569659116206092e-05,
+            "transition_fraction": 0.0
+          },
+          {
+            "dose": 2.5,
+            "e_perp": 0.0002413492131499189,
+            "transition_fraction": 0.0
+          },
+          {
+            "dose": 5.0,
+            "e_perp": 0.0009525542694543308,
+            "transition_fraction": 0.0
+          },
+          {
+            "dose": 7.0711,
+            "e_perp": 0.0020295690119046745,
+            "transition_fraction": 0.0
+          },
+          {
+            "dose": 10.0,
+            "e_perp": 0.007297046345572197,
+            "transition_fraction": 1.0
+          },
+          {
+            "dose": 14.1421,
+            "e_perp": 0.019604965048040074,
+            "transition_fraction": 1.0
+          },
+          {
+            "dose": 20.0,
+            "e_perp": 0.03899975546576589,
+            "transition_fraction": 1.0
+          },
+          {
+            "dose": 28.2843,
+            "e_perp": 0.06898649464390502,
+            "transition_fraction": 1.0
+          }
+        ],
+        "positive_control_max_effect": 1.0,
+        "sham_e_perp_floor": 7.607070185292447e-06
+      },
+      "figures": [
+        "smp_v3_study2_emergent_hopfield_diagnostics.pdf",
+        "smp_v3_study2_emergent_hopfield_diagnostics.png"
+      ],
+      "overall_study_verdict": "FAIL",
+      "pre_sealing_audit": {
+        "calibrated_s_crit": 8.535,
+        "early_warning_pass": true,
+        "goodhart_audit_pass": true,
+        "goodhart_audit_summary": {
+          "goodhart_elasticity": 0.606,
+          "goodhart_overoptimization_divergence": 0.0843,
+          "goodhart_tipping_dose_s_gh": 8.535,
+          "goodhart_tipping_rung": 7,
+          "lead_rungs_before_goodhart": 0,
+          "orthogonal_warning_dose_s_warn": 8.535,
+          "orthogonal_warning_rung": 7,
+          "utility_retention_at_max_dose": 0.4889,
+          "warned_before_goodhart": false
+        },
+        "hopfield_25pct_shard_regen_rate": 1.0,
+        "low_dose_quadratic_exponent": 1.953,
+        "max_lockin_chi_exponent": 4.611,
+        "max_pre_bifurcation_exponent": 3.086,
+        "quadratic_law_pass": true,
+        "sham_e_perp_floor": 7.210800032249646e-06,
+        "sham_pass": true,
+        "syncytium_cfl_pass": true,
+        "vault_ledger_pass": true
+      },
+      "study_id": "SMP_V3_STUDY2_EMERGENT_HOPFIELD",
+      "training_summaries": [
+        {
+          "checkpoint_path": "smp_v3_hopfield_rule_seed_0.pt",
+          "final_mse_loss": 0.000141,
+          "initial_mse_loss": 0.00258,
+          "loss_history_decimated": [
+            0.00258,
+            0.00022,
+            0.000158,
+            0.000144,
+            0.000142,
+            0.000165,
+            0.000145,
+            0.000143
+          ],
+          "num_epochs": 80,
+          "seed_idx": 0
+        },
+        {
+          "checkpoint_path": "smp_v3_hopfield_rule_seed_1.pt",
+          "final_mse_loss": 0.000146,
+          "initial_mse_loss": 0.002356,
+          "loss_history_decimated": [
+            0.002356,
+            0.000221,
+            0.000163,
+            0.000164,
+            0.000162,
+            0.000148,
+            0.000137,
+            0.000147
+          ],
+          "num_epochs": 80,
+          "seed_idx": 1
+        },
+        {
+          "checkpoint_path": "smp_v3_hopfield_rule_seed_2.pt",
+          "final_mse_loss": 0.000203,
+          "initial_mse_loss": 0.001792,
+          "loss_history_decimated": [
+            0.001792,
+            0.00019,
+            0.000173,
+            0.000143,
+            0.000148,
+            0.000163,
+            0.000139,
+            0.00034
+          ],
+          "num_epochs": 80,
+          "seed_idx": 2
+        }
+      ]
+    },
+    "prev_hash": "9644190a44553d75817569f476b6b719fbbb04e78aa28c491ddb40a3c577b78a",
+    "study_id": "SMP_V3_STUDY2_EMERGENT_HOPFIELD",
+    "timestamp_utc": "2026-11-18T17:35:49Z"
+  },
+  {
+    "entry_hash": "6be97949dbecd8a991fcfe1858b85241bdd99d70bf8a8dc64bfdbb4430c9c945",
+    "entry_type": "SEALED_PREDICTION",
+    "index": 27,
+    "payload": {
+      "power": 0.96
+    },
+    "prev_hash": "d4a61acec3f4fa0c90f34d66f764dc772f7b9c1c024f7701da4b43afa7157747",
+    "study_id": "AUDIT_TEST",
+    "timestamp_utc": "2026-11-18T17:41:29Z"
+  },
+  {
+    "entry_hash": "ccc8ed9aadc072ba4767887f514c511bf3fb668a3bf5755a2d9d4c9c92981b2e",
+    "entry_type": "RUN_VERDICT",
+    "index": 28,
+    "payload": {
+      "status": "PASS"
+    },
+    "prev_hash": "6be97949dbecd8a991fcfe1858b85241bdd99d70bf8a8dc64bfdbb4430c9c945",
+    "study_id": "AUDIT_TEST",
+    "timestamp_utc": "2026-11-18T17:41:29Z"
+  },
+  {
+    "entry_hash": "24e1351aca1d07fda7c6e2f06d7c3e0a7a2ca051be47afce9638404d579976c4",
+    "entry_type": "SEALED_PREDICTION",
+    "index": 29,
+    "payload": {
+      "consolidation_downstream_layers": "L_edit+1..L_edit+4",
+      "fallback_dose_ladder": [
+        0.0,
+        0.025,
+        0.035355,
+        0.05,
+        0.070711,
+        0.1,
+        0.141421,
+        0.2,
+        0.282843,
+        0.4,
+        0.565685
+      ],
+      "interventions": [
+        "linear_all_layer",
+        "geodesic_top25"
+      ],
+      "kv_rollout_steps": 16,
+      "lockin_dither": {
+        "dither_amplitude": 0.004,
+        "harmonic_cycles": 3,
+        "time_steps_td": 16
+      },
+      "models": [
+        "Qwen/Qwen2.5-1.5B",
+        "Qwen/Qwen2.5-3B"
+      ],
+      "pilot_calibration_candidate_doses": [
+        0.0,
+        0.05,
+        0.1,
+        0.2,
+        0.4,
+        0.8,
+        1.2,
+        1.8
+      ],
+      "precision": "strict_ieee754_float32_activations_float64_accumulators",
+      "protocol_version": "SMP_v3.0_Pure_Emergent",
+      "registered_hypotheses": {
+        "H1.1": {
+          "a_priori_power": 0.9573,
+          "alpha": 0.05,
+          "exponent_warning_threshold": 2.5,
+          "gsm8k_degradation_tolerance": 0.05,
+          "min_lead_steps": 1,
+          "statement": "Under genuine 16-token autoregressive generation (use_cache=True) with zero operational envelopes, raw final-layer hidden-state orthogonal exponent alpha_perp or quadrature lock-in exponent alpha_chi_perp breaches 2.5 at least one sqrt(2) dose step before held-out multi-token GSM8K or WikiText-2 degradation (>5% drop/rise), and GeodesicSubspaceIntervention (top-25% layers) achieves >= 10x higher task subspace selectivity (E_parallel / E_total) than linear_all_layer.",
+          "wikitext_ppl_rel_degradation_tolerance": 0.05
+        },
+        "H1.2": {
+          "a_priori_power": 0.9495,
+          "alpha": 0.05,
+          "consolidation_steps_N": [
+            0,
+            10,
+            50,
+            200
+          ],
+          "counter_dose_factors": [
+            0.0,
+            0.125,
+            0.176777,
+            0.25,
+            0.353553,
+            0.5,
+            0.707107,
+            1.0,
+            1.414214,
+            2.0,
+            2.828427,
+            4.0,
+            5.656854
+          ],
+          "min_v50_ratio_200_vs_0": 2.0,
+          "statement": "Applying rank-1 edit (delta_W = s_write * u @ v.T) at L_edit and fine-tuning downstream layers L_edit+1..L_edit+4 via AdamW for N in {0, 10, 50, 200} steps increases unscaled counter-patch reversal cost v50(N) monotonically with v50(N=200) >= 2.0 * v50(N=0)."
+        }
+      },
+      "study_id": "SMP_V3_STUDY1_EMERGENT_LLM",
+      "tangent_subspace_rank_k": 4
+    },
+    "prev_hash": "ccc8ed9aadc072ba4767887f514c511bf3fb668a3bf5755a2d9d4c9c92981b2e",
+    "study_id": "SMP_V3_STUDY1_EMERGENT_LLM",
+    "timestamp_utc": "2026-11-18T17:55:31Z"
+  },
+  {
+    "entry_hash": "ed0bd993e9a35f41f7c1ac4bf6f05f771f07589a9bf73b9672b8b197d07aee0d",
+    "entry_type": "RUN_VERDICT",
+    "index": 30,
+    "payload": {
+      "H1_1_calibrations": {
+        "Qwen/Qwen2.5-1.5B": {
+          "calibrated_dose_ladder": [
+            0.0,
+            0.025,
+            0.035355,
+            0.05,
+            0.070711,
+            0.1,
+            0.141421,
+            0.2,
+            0.282843,
+            0.4,
+            0.565685
+          ],
+          "calibration_status": "WARN_FALLBACK",
+          "message": "[CalibrationSpoiledError] Positive control reached only 0.0% (< 80.0% required). Increase dose range or coupling!"
+        },
+        "Qwen/Qwen2.5-3B": {
+          "calibrated_dose_ladder": [
+            0.0,
+            0.025,
+            0.035355,
+            0.05,
+            0.070711,
+            0.1,
+            0.141421,
+            0.2,
+            0.282843,
+            0.4,
+            0.565685
+          ],
+          "calibration_status": "WARN_FALLBACK",
+          "message": "[CalibrationSpoiledError] Positive control reached only 0.0% (< 80.0% required). Increase dose range or coupling!"
+        }
+      },
+      "H1_1_summary": {
+        "Qwen/Qwen2.5-1.5B": {
+          "geodesic_top25": {
+            "degradation_dose": 0.282843,
+            "degradation_rung_idx": 8,
+            "early_warning_lead_steps": 4,
+            "goodhart_eval": {
+              "goodhart_elasticity": 0.3549,
+              "goodhart_overoptimization_divergence": 0.0342,
+              "goodhart_tipping_dose_s_gh": 0.282843,
+              "goodhart_tipping_rung": 8,
+              "lead_rungs_before_goodhart": 4,
+              "orthogonal_warning_dose_s_warn": 0.070711,
+              "orthogonal_warning_rung": 4,
+              "utility_retention_at_max_dose": 0.658,
+              "warned_before_goodhart": true
+            },
+            "low_dose_alpha_perp": 1.99,
+            "max_alpha_chi_perp": 22.9205,
+            "max_alpha_perp": 15.7419,
+            "mean_selectivity_ratio": 0.2455,
+            "pass_early_warning": true,
+            "sham_e_perp_floor": 0.00091669,
+            "warn_dose": 0.070711,
+            "warn_rung_idx": 4
+          },
+          "linear_all_layer": {
+            "degradation_dose": null,
+            "degradation_rung_idx": null,
+            "early_warning_lead_steps": null,
+            "goodhart_eval": {
+              "goodhart_elasticity": 0.0,
+              "goodhart_overoptimization_divergence": 0.0,
+              "goodhart_tipping_dose_s_gh": null,
+              "goodhart_tipping_rung": null,
+              "lead_rungs_before_goodhart": null,
+              "orthogonal_warning_dose_s_warn": 0.4,
+              "orthogonal_warning_rung": 9,
+              "utility_retention_at_max_dose": 1.0046,
+              "warned_before_goodhart": true
+            },
+            "low_dose_alpha_perp": 2.0074,
+            "max_alpha_chi_perp": 10.8258,
+            "max_alpha_perp": 5.985,
+            "mean_selectivity_ratio": 0.0203,
+            "pass_early_warning": false,
+            "sham_e_perp_floor": 5.941e-05,
+            "warn_dose": 0.4,
+            "warn_rung_idx": 9
+          },
+          "selectivity_gain_geodesic_vs_linear": 12.09
+        },
+        "Qwen/Qwen2.5-3B": {
+          "geodesic_top25": {
+            "degradation_dose": null,
+            "degradation_rung_idx": null,
+            "early_warning_lead_steps": null,
+            "goodhart_eval": {
+              "goodhart_elasticity": 0.0226,
+              "goodhart_overoptimization_divergence": 0.0025,
+              "goodhart_tipping_dose_s_gh": null,
+              "goodhart_tipping_rung": null,
+              "lead_rungs_before_goodhart": null,
+              "orthogonal_warning_dose_s_warn": 0.035355,
+              "orthogonal_warning_rung": 2,
+              "utility_retention_at_max_dose": 0.975,
+              "warned_before_goodhart": true
+            },
+            "low_dose_alpha_perp": 19.4536,
+            "max_alpha_chi_perp": 23.7365,
+            "max_alpha_perp": 19.4536,
+            "mean_selectivity_ratio": 0.0957,
+            "pass_early_warning": false,
+            "sham_e_perp_floor": 0.00120542,
+            "warn_dose": 0.035355,
+            "warn_rung_idx": 2
+          },
+          "linear_all_layer": {
+            "degradation_dose": null,
+            "degradation_rung_idx": null,
+            "early_warning_lead_steps": null,
+            "goodhart_eval": {
+              "goodhart_elasticity": 0.0,
+              "goodhart_overoptimization_divergence": 0.0,
+              "goodhart_tipping_dose_s_gh": null,
+              "goodhart_tipping_rung": null,
+              "lead_rungs_before_goodhart": null,
+              "orthogonal_warning_dose_s_warn": 0.4,
+              "orthogonal_warning_rung": 9,
+              "utility_retention_at_max_dose": 1.0011,
+              "warned_before_goodhart": true
+            },
+            "low_dose_alpha_perp": 2.0048,
+            "max_alpha_chi_perp": 12.668,
+            "max_alpha_perp": 7.7259,
+            "mean_selectivity_ratio": 0.0112,
+            "pass_early_warning": false,
+            "sham_e_perp_floor": 0.00019867,
+            "warn_dose": 0.4,
+            "warn_rung_idx": 9
+          },
+          "selectivity_gain_geodesic_vs_linear": 8.54
+        }
+      },
+      "H1_1_verdict": "FAIL",
+      "H1_2_summary": {
+        "Qwen/Qwen2.5-1.5B": {
+          "monotonic_consolidation": false,
+          "pass_consolidation_window": false,
+          "v50_by_N": {
+            "0": 0.8401,
+            "10": 0.8265,
+            "200": 0.8412,
+            "50": 0.84
+          },
+          "v50_ratio_N200_over_N0": 1.0013,
+          "v_flip_by_N": {
+            "0": 0.9018,
+            "10": 0.9291,
+            "200": 0.9261,
+            "50": 0.9272
+          }
+        },
+        "Qwen/Qwen2.5-3B": {
+          "monotonic_consolidation": false,
+          "pass_consolidation_window": false,
+          "v50_by_N": {
+            "0": 0.7154,
+            "10": 0.824,
+            "200": 0.8323,
+            "50": 0.835
+          },
+          "v50_ratio_N200_over_N0": 1.1634,
+          "v_flip_by_N": {
+            "0": 0.7695,
+            "10": 0.9318,
+            "200": 0.9243,
+            "50": 0.9294
+          }
+        }
+      },
+      "H1_2_verdict": "FAIL",
+      "figures": [
+        "smp_v3_study1_emergent_llm_diagnostics.pdf",
+        "smp_v3_study1_emergent_llm_diagnostics.png"
+      ],
+      "overall_study_verdict": "FAIL",
+      "pre_sealing_audit": {
+        "calibrated_s_crit": 8.535,
+        "early_warning_pass": true,
+        "goodhart_audit_pass": true,
+        "goodhart_audit_summary": {
+          "goodhart_elasticity": 0.606,
+          "goodhart_overoptimization_divergence": 0.0843,
+          "goodhart_tipping_dose_s_gh": 8.535,
+          "goodhart_tipping_rung": 7,
+          "lead_rungs_before_goodhart": 0,
+          "orthogonal_warning_dose_s_warn": 8.535,
+          "orthogonal_warning_rung": 7,
+          "utility_retention_at_max_dose": 0.4889,
+          "warned_before_goodhart": false
+        },
+        "hopfield_25pct_shard_regen_rate": 1.0,
+        "low_dose_quadratic_exponent": 1.953,
+        "max_lockin_chi_exponent": 4.611,
+        "max_pre_bifurcation_exponent": 3.086,
+        "quadratic_law_pass": true,
+        "sham_e_perp_floor": 7.210800032249646e-06,
+        "sham_pass": true,
+        "syncytium_cfl_pass": true,
+        "vault_ledger_pass": true
+      },
+      "study_id": "SMP_V3_STUDY1_EMERGENT_LLM"
+    },
+    "prev_hash": "24e1351aca1d07fda7c6e2f06d7c3e0a7a2ca051be47afce9638404d579976c4",
+    "study_id": "SMP_V3_STUDY1_EMERGENT_LLM",
+    "timestamp_utc": "2026-11-18T17:55:31Z"
+  },
+  {
+    "entry_hash": "948b2895cc920f4074b18c4d7c5c37e5cce0e1cb8c676e61c939a0cf902bf0a4",
+    "entry_type": "SEALED_PREDICTION",
+    "index": 31,
+    "payload": {
+      "calibration_certificate": {
+        "baseline_assay_signal": 2.0,
+        "calibrated_dose_ladder": [
+          0.0,
+          1.066944,
+          1.508886,
+          2.133887,
+          3.017773,
+          4.267775,
+          6.035545,
+          8.53555,
+          12.071091,
+          17.0711,
+          24.142181
+        ],
+        "calibration_status": "PASS",
+        "estimated_s_crit_ec50": 8.53555,
+        "pilot_probe_records": [
+          {
+            "dose": 1.25,
+            "e_perp": 6.569660486046578e-05,
+            "transition_fraction": 0.0
+          },
+          {
+            "dose": 2.5,
+            "e_perp": 0.00024134930786679642,
+            "transition_fraction": 0.0
+          },
+          {
+            "dose": 5.0,
+            "e_perp": 0.0009525541337090256,
+            "transition_fraction": 0.0
+          },
+          {
+            "dose": 7.0711,
+            "e_perp": 0.00202956967008951,
+            "transition_fraction": 0.0
+          },
+          {
+            "dose": 10.0,
+            "e_perp": 0.007297043998052035,
+            "transition_fraction": 1.0
+          },
+          {
+            "dose": 14.1421,
+            "e_perp": 0.019604965740903535,
+            "transition_fraction": 1.0
+          },
+          {
+            "dose": 20.0,
+            "e_perp": 0.038999765434311065,
+            "transition_fraction": 1.0
+          },
+          {
+            "dose": 28.2843,
+            "e_perp": 0.06898650661837386,
+            "transition_fraction": 1.0
+          }
+        ],
+        "positive_control_max_effect": 1.0,
+        "sham_e_perp_floor": 7.607076628814278e-06
+      },
+      "dose_ladder": [
+        0.0,
+        1.066944,
+        1.508886,
+        2.133887,
+        3.017773,
+        4.267775,
+        6.035545,
+        8.53555,
+        12.071091,
+        17.0711,
+        24.142181
+      ],
+      "gpu_device": "NVIDIA GeForce RTX 3050 Laptop GPU",
+      "n_shards_per_rung": 250,
+      "num_seeds": 3,
+      "post_cut_delays": [
+        0,
+        10,
+        15,
+        25,
+        50,
+        100,
+        "adult"
+      ],
+      "protocol_version": "SMP_v3.0_Local_RTX3050_Pure_Emergent",
+      "study_id": "SMP_V3_LOCAL_STUDY2_HOPFIELD",
+      "write_dose": 24.142181
+    },
+    "prev_hash": "ed0bd993e9a35f41f7c1ac4bf6f05f771f07589a9bf73b9672b8b197d07aee0d",
+    "study_id": "SMP_V3_LOCAL_STUDY2_HOPFIELD",
+    "timestamp_utc": "2026-11-18T18:49:49Z"
+  },
+  {
+    "entry_hash": "6f13618a92e796785a62d68f8965acaeda095475412e334a62b7ba8df9524564",
+    "entry_type": "RUN_VERDICT",
+    "index": 32,
+    "payload": {
+      "H2_1_summary": {
+        "seed_0": {
+          "n_shards": 250,
+          "pass_H2_1": true,
+          "sham_2h_rate": 0.0,
+          "write_chord_2h_regen_rate": 1.0
+        },
+        "seed_1": {
+          "n_shards": 250,
+          "pass_H2_1": true,
+          "sham_2h_rate": 0.0,
+          "write_chord_2h_regen_rate": 1.0
+        },
+        "seed_2": {
+          "n_shards": 250,
+          "pass_H2_1": true,
+          "sham_2h_rate": 0.0,
+          "write_chord_2h_regen_rate": 1.0
+        }
+      },
+      "H2_1_verdict": "PASS",
+      "H2_2_summary": {
+        "seed_0": {
+          "goodhart_spectator_m2": {
+            "goodhart_elasticity": 0.6044,
+            "goodhart_overoptimization_divergence": 0.0837,
+            "goodhart_tipping_dose_s_gh": 8.53555,
+            "goodhart_tipping_rung": 7,
+            "lead_rungs_before_goodhart": -2,
+            "orthogonal_warning_dose_s_warn": 17.0711,
+            "orthogonal_warning_rung": 9,
+            "utility_retention_at_max_dose": 0.4911,
+            "warned_before_goodhart": false
+          },
+          "individual_early_warning_rate": 0.656,
+          "low_dose_alpha_perp": 1.862,
+          "max_pop_alpha_chi": 6.7718,
+          "max_pop_alpha_perp": 6.2985,
+          "median_dose_lead_factor": 4.0,
+          "pass_H2_2": false,
+          "sham_e_perp_floor": 7.346747290972914e-06,
+          "switched_shards": 250,
+          "warned_prior_to_switch": 164
+        },
+        "seed_1": {
+          "goodhart_spectator_m2": {
+            "goodhart_elasticity": 0.6068,
+            "goodhart_overoptimization_divergence": 0.0843,
+            "goodhart_tipping_dose_s_gh": 8.53555,
+            "goodhart_tipping_rung": 7,
+            "lead_rungs_before_goodhart": -2,
+            "orthogonal_warning_dose_s_warn": 17.0711,
+            "orthogonal_warning_rung": 9,
+            "utility_retention_at_max_dose": 0.4885,
+            "warned_before_goodhart": false
+          },
+          "individual_early_warning_rate": 0.724,
+          "low_dose_alpha_perp": 1.8638,
+          "max_pop_alpha_chi": 5.0431,
+          "max_pop_alpha_perp": 5.169,
+          "median_dose_lead_factor": 5.6569,
+          "pass_H2_2": false,
+          "sham_e_perp_floor": 7.453997995162706e-06,
+          "switched_shards": 250,
+          "warned_prior_to_switch": 181
+        },
+        "seed_2": {
+          "goodhart_spectator_m2": {
+            "goodhart_elasticity": 0.6131,
+            "goodhart_overoptimization_divergence": 0.0856,
+            "goodhart_tipping_dose_s_gh": 8.53555,
+            "goodhart_tipping_rung": 7,
+            "lead_rungs_before_goodhart": -3,
+            "orthogonal_warning_dose_s_warn": 24.142181,
+            "orthogonal_warning_rung": 10,
+            "utility_retention_at_max_dose": 0.482,
+            "warned_before_goodhart": false
+          },
+          "individual_early_warning_rate": 0.812,
+          "low_dose_alpha_perp": 2.0072,
+          "max_pop_alpha_chi": 3.7234,
+          "max_pop_alpha_perp": 3.7544,
+          "median_dose_lead_factor": 5.6569,
+          "pass_H2_2": false,
+          "sham_e_perp_floor": 7.448941368373693e-06,
+          "switched_shards": 250,
+          "warned_prior_to_switch": 203
+        }
+      },
+      "H2_2_verdict": "FAIL",
+      "H2_3_summary": {
+        "seed_0": {
+          "adult_to_plastic_ratio": 1.0003,
+          "adult_to_tau0_ratio": 1.4541,
+          "norm_by_delay": {
+            "0": 4.1353,
+            "10": 6.7843,
+            "100": 8.1168,
+            "15": 7.5125,
+            "25": 7.9963,
+            "50": 8.1147,
+            "adult": 8.1169
+          },
+          "pass_H2_3": false,
+          "v50_at_tau0": 0.2235,
+          "v50_by_delay": {
+            "0": 0.2235,
+            "10": 0.3249,
+            "100": 0.325,
+            "15": 0.325,
+            "25": 0.325,
+            "50": 0.325,
+            "adult": 0.325
+          },
+          "v50_min_10_to_25_steps": 0.3249,
+          "v50_settled_adult": 0.325
+        },
+        "seed_1": {
+          "adult_to_plastic_ratio": 1.0,
+          "adult_to_tau0_ratio": 1.4693,
+          "norm_by_delay": {
+            "0": 4.1414,
+            "10": 6.7831,
+            "100": 8.123,
+            "15": 7.513,
+            "25": 8.0004,
+            "50": 8.1208,
+            "adult": 8.123
+          },
+          "pass_H2_3": false,
+          "v50_at_tau0": 0.2212,
+          "v50_by_delay": {
+            "0": 0.2212,
+            "10": 0.325,
+            "100": 0.325,
+            "15": 0.325,
+            "25": 0.325,
+            "50": 0.325,
+            "adult": 0.325
+          },
+          "v50_min_10_to_25_steps": 0.325,
+          "v50_settled_adult": 0.325
+        },
+        "seed_2": {
+          "adult_to_plastic_ratio": 1.0006,
+          "adult_to_tau0_ratio": 1.4659,
+          "norm_by_delay": {
+            "0": 4.1477,
+            "10": 6.7847,
+            "100": 8.1199,
+            "15": 7.5125,
+            "25": 7.998,
+            "50": 8.1177,
+            "adult": 8.1199
+          },
+          "pass_H2_3": false,
+          "v50_at_tau0": 0.2217,
+          "v50_by_delay": {
+            "0": 0.2217,
+            "10": 0.3248,
+            "100": 0.325,
+            "15": 0.325,
+            "25": 0.325,
+            "50": 0.325,
+            "adult": 0.325
+          },
+          "v50_min_10_to_25_steps": 0.3248,
+          "v50_settled_adult": 0.325
+        }
+      },
+      "H2_3_verdict": "FAIL",
+      "calibration_certificate": {
+        "baseline_assay_signal": 2.0,
+        "calibrated_dose_ladder": [
+          0.0,
+          1.066944,
+          1.508886,
+          2.133887,
+          3.017773,
+          4.267775,
+          6.035545,
+          8.53555,
+          12.071091,
+          17.0711,
+          24.142181
+        ],
+        "calibration_status": "PASS",
+        "estimated_s_crit_ec50": 8.53555,
+        "pilot_probe_records": [
+          {
+            "dose": 1.25,
+            "e_perp": 6.569660486046578e-05,
+            "transition_fraction": 0.0
+          },
+          {
+            "dose": 2.5,
+            "e_perp": 0.00024134930786679642,
+            "transition_fraction": 0.0
+          },
+          {
+            "dose": 5.0,
+            "e_perp": 0.0009525541337090256,
+            "transition_fraction": 0.0
+          },
+          {
+            "dose": 7.0711,
+            "e_perp": 0.00202956967008951,
+            "transition_fraction": 0.0
+          },
+          {
+            "dose": 10.0,
+            "e_perp": 0.007297043998052035,
+            "transition_fraction": 1.0
+          },
+          {
+            "dose": 14.1421,
+            "e_perp": 0.019604965740903535,
+            "transition_fraction": 1.0
+          },
+          {
+            "dose": 20.0,
+            "e_perp": 0.038999765434311065,
+            "transition_fraction": 1.0
+          },
+          {
+            "dose": 28.2843,
+            "e_perp": 0.06898650661837386,
+            "transition_fraction": 1.0
+          }
+        ],
+        "positive_control_max_effect": 1.0,
+        "sham_e_perp_floor": 7.607076628814278e-06
+      },
+      "gpu_device": "NVIDIA GeForce RTX 3050 Laptop GPU",
+      "overall_study_verdict": "FAIL",
+      "peak_vram_mb": 22.29,
+      "study_id": "SMP_V3_LOCAL_STUDY2_HOPFIELD",
+      "training_summaries": [
+        {
+          "checkpoint_path": "smp_v3_local_hopfield_seed_0.pt",
+          "final_mse_loss": 0.000141,
+          "initial_mse_loss": 0.00258,
+          "num_epochs": 80,
+          "seed_idx": 0
+        },
+        {
+          "checkpoint_path": "smp_v3_local_hopfield_seed_1.pt",
+          "final_mse_loss": 0.000146,
+          "initial_mse_loss": 0.002356,
+          "num_epochs": 80,
+          "seed_idx": 1
+        },
+        {
+          "checkpoint_path": "smp_v3_local_hopfield_seed_2.pt",
+          "final_mse_loss": 0.000203,
+          "initial_mse_loss": 0.001792,
+          "num_epochs": 80,
+          "seed_idx": 2
+        }
+      ]
+    },
+    "prev_hash": "948b2895cc920f4074b18c4d7c5c37e5cce0e1cb8c676e61c939a0cf902bf0a4",
+    "study_id": "SMP_V3_LOCAL_STUDY2_HOPFIELD",
+    "timestamp_utc": "2026-11-18T18:50:58Z"
+  },
+  {
+    "entry_hash": "3995e9cf88bd2298461f5238b7a54206503f5fdc4f913f55f170dce75d173bfc",
+    "entry_type": "SEALED_PREDICTION",
+    "index": 33,
+    "payload": {
+      "calibration_certificate": {
+        "baseline_assay_signal": 2.0,
+        "calibrated_dose_ladder": [
+          0.0,
+          1.066944,
+          1.508886,
+          2.133887,
+          3.017773,
+          4.267775,
+          6.035545,
+          8.53555,
+          12.071091,
+          17.0711,
+          24.142181
+        ],
+        "calibration_status": "PASS",
+        "estimated_s_crit_ec50": 8.53555,
+        "pilot_probe_records": [
+          {
+            "dose": 1.25,
+            "e_perp": 6.5213544607495e-05,
+            "transition_fraction": 0.0
+          },
+          {
+            "dose": 2.5,
+            "e_perp": 0.00024609498828251114,
+            "transition_fraction": 0.0
+          },
+          {
+            "dose": 5.0,
+            "e_perp": 0.0009518218744396693,
+            "transition_fraction": 0.0
+          },
+          {
+            "dose": 7.0711,
+            "e_perp": 0.002039723016426879,
+            "transition_fraction": 0.0
+          },
+          {
+            "dose": 10.0,
+            "e_perp": 0.007276354381164166,
+            "transition_fraction": 1.0
+          },
+          {
+            "dose": 14.1421,
+            "e_perp": 0.019683033576188908,
+            "transition_fraction": 1.0
+          },
+          {
+            "dose": 20.0,
+            "e_perp": 0.03900998461105744,
+            "transition_fraction": 1.0
+          },
+          {
+            "dose": 28.2843,
+            "e_perp": 0.06906869380728597,
+            "transition_fraction": 1.0
+          }
+        ],
+        "positive_control_max_effect": 1.0,
+        "sham_e_perp_floor": 7.607076628814278e-06
+      },
+      "gpu_device": "NVIDIA GeForce RTX 3050 Laptop GPU",
+      "predictions": {
+        "A1": "1-layer Mod-113 Transformer compiles >= 85% embedding/unembedding energy into top Fourier modes over 2500 epochs.",
+        "A2": "On continuous single-skill capability under fine sqrt4(2) ladder, alpha_chi_perp > 2.5 warns ahead of collapse in >= 90% of runs while smooth aggregate KL averages the edge away.",
+        "A3": "Reversal cost v50 during active Hopfield norm growth (tau in [1, 5], ||x|| < 6.5) and pre-grokking is >= 2.5x cheaper than saturated adult."
+      },
+      "protocol_version": "SMP_v3.1_StudyA_Grokking_IndrasNet",
+      "study_id": "SMP_V3_1_STUDY_A_GROKKING_INDRAS"
+    },
+    "prev_hash": "6f13618a92e796785a62d68f8965acaeda095475412e334a62b7ba8df9524564",
+    "study_id": "SMP_V3_1_STUDY_A_GROKKING_INDRAS",
+    "timestamp_utc": "2026-11-18T19:03:57Z"
+  },
+  {
+    "entry_hash": "651653a8cadc390034a83f877dfdcc3d41080c0a58ce301b1bbbb5f2a4c5ba44",
+    "entry_type": "RUN_VERDICT",
+    "index": 34,
+    "payload": {
+      "A1_grokking_summary": {
+        "seed_0": {
+          "emb_fourier_energy_frac": 0.2553,
+          "final_test_acc": 0.4833,
+          "history": [
+            {
+              "emb_fourier_energy_frac": 0.1616,
+              "epoch": 0,
+              "mean_fourier_energy_frac": 0.1518,
+              "restricted_fourier_acc": 0.0092,
+              "restricted_fourier_loss": 4.748527,
+              "test_acc": 0.0096,
+              "test_loss": 4.919138,
+              "top_frequencies": [
+                52,
+                16,
+                28,
+                23,
+                51,
+                41,
+                31,
+                27
+              ],
+              "train_acc": 0.008,
+              "unemb_fourier_energy_frac": 0.1421
+            },
+            {
+              "emb_fourier_energy_frac": 0.1668,
+              "epoch": 300,
+              "mean_fourier_energy_frac": 0.182,
+              "restricted_fourier_acc": 0.0709,
+              "restricted_fourier_loss": 4.492617,
+              "test_acc": 0.4611,
+              "test_loss": 11.231128,
+              "top_frequencies": [
+                52,
+                16,
+                28,
+                23,
+                41,
+                56,
+                54,
+                10
+              ],
+              "train_acc": 0.9684,
+              "unemb_fourier_energy_frac": 0.1973
+            },
+            {
+              "emb_fourier_energy_frac": 0.1739,
+              "epoch": 600,
+              "mean_fourier_energy_frac": 0.1939,
+              "restricted_fourier_acc": 0.085,
+              "restricted_fourier_loss": 4.380922,
+              "test_acc": 0.4631,
+              "test_loss": 11.387551,
+              "top_frequencies": [
+                52,
+                16,
+                56,
+                28,
+                23,
+                54,
+                41,
+                10
+              ],
+              "train_acc": 0.9939,
+              "unemb_fourier_energy_frac": 0.2138
+            },
+            {
+              "emb_fourier_energy_frac": 0.1889,
+              "epoch": 1000,
+              "mean_fourier_energy_frac": 0.2141,
+              "restricted_fourier_acc": 0.1104,
+              "restricted_fourier_loss": 4.529938,
+              "test_acc": 0.4724,
+              "test_loss": 13.185323,
+              "top_frequencies": [
+                52,
+                56,
+                16,
+                23,
+                28,
+                54,
+                10,
+                24
+              ],
+              "train_acc": 1.0,
+              "unemb_fourier_energy_frac": 0.2394
+            },
+            {
+              "emb_fourier_energy_frac": 0.2114,
+              "epoch": 1500,
+              "mean_fourier_energy_frac": 0.2349,
+              "restricted_fourier_acc": 0.1344,
+              "restricted_fourier_loss": 4.971212,
+              "test_acc": 0.4772,
+              "test_loss": 15.73331,
+              "top_frequencies": [
+                52,
+                56,
+                23,
+                16,
+                24,
+                28,
+                54,
+                10
+              ],
+              "train_acc": 1.0,
+              "unemb_fourier_energy_frac": 0.2584
+            },
+            {
+              "emb_fourier_energy_frac": 0.2307,
+              "epoch": 2000,
+              "mean_fourier_energy_frac": 0.2566,
+              "restricted_fourier_acc": 0.1798,
+              "restricted_fourier_loss": 4.638878,
+              "test_acc": 0.4816,
+              "test_loss": 14.654837,
+              "top_frequencies": [
+                52,
+                56,
+                16,
+                24,
+                23,
+                28,
+                54,
+                47
+              ],
+              "train_acc": 1.0,
+              "unemb_fourier_energy_frac": 0.2826
+            },
+            {
+              "emb_fourier_energy_frac": 0.2553,
+              "epoch": 2500,
+              "mean_fourier_energy_frac": 0.2811,
+              "restricted_fourier_acc": 0.2304,
+              "restricted_fourier_loss": 4.179488,
+              "test_acc": 0.4833,
+              "test_loss": 13.004967,
+              "top_frequencies": [
+                52,
+                56,
+                16,
+                24,
+                23,
+                28,
+                54,
+                47
+              ],
+              "train_acc": 1.0,
+              "unemb_fourier_energy_frac": 0.3069
+            }
+          ],
+          "mean_fourier_energy_frac": 0.2811,
+          "restricted_fourier_acc": 0.2304,
+          "restricted_fourier_loss": 4.179488,
+          "top_frequencies": [
+            52,
+            56,
+            16,
+            24,
+            23,
+            28,
+            54,
+            47
+          ],
+          "unemb_fourier_energy_frac": 0.3069
+        },
+        "seed_1": {
+          "emb_fourier_energy_frac": 0.335,
+          "final_test_acc": 0.5527,
+          "history": [
+            {
+              "emb_fourier_energy_frac": 0.1653,
+              "epoch": 0,
+              "mean_fourier_energy_frac": 0.1543,
+              "restricted_fourier_acc": 0.0086,
+              "restricted_fourier_loss": 4.76083,
+              "test_acc": 0.0083,
+              "test_loss": 4.99033,
+              "top_frequencies": [
+                9,
+                41,
+                17,
+                29,
+                14,
+                40,
+                19,
+                15
+              ],
+              "train_acc": 0.0088,
+              "unemb_fourier_energy_frac": 0.1433
+            },
+            {
+              "emb_fourier_energy_frac": 0.1732,
+              "epoch": 300,
+              "mean_fourier_energy_frac": 0.2016,
+              "restricted_fourier_acc": 0.0625,
+              "restricted_fourier_loss": 5.0294,
+              "test_acc": 0.4553,
+              "test_loss": 10.454072,
+              "top_frequencies": [
+                9,
+                19,
+                17,
+                41,
+                46,
+                10,
+                29,
+                39
+              ],
+              "train_acc": 0.9608,
+              "unemb_fourier_energy_frac": 0.2301
+            },
+            {
+              "emb_fourier_energy_frac": 0.1843,
+              "epoch": 600,
+              "mean_fourier_energy_frac": 0.2257,
+              "restricted_fourier_acc": 0.1026,
+              "restricted_fourier_loss": 4.582956,
+              "test_acc": 0.4703,
+              "test_loss": 10.334971,
+              "top_frequencies": [
+                9,
+                19,
+                39,
+                46,
+                17,
+                10,
+                41,
+                32
+              ],
+              "train_acc": 0.9955,
+              "unemb_fourier_energy_frac": 0.2671
+            },
+            {
+              "emb_fourier_energy_frac": 0.2083,
+              "epoch": 1000,
+              "mean_fourier_energy_frac": 0.251,
+              "restricted_fourier_acc": 0.1477,
+              "restricted_fourier_loss": 4.596812,
+              "test_acc": 0.4839,
+              "test_loss": 11.322183,
+              "top_frequencies": [
+                9,
+                19,
+                39,
+                10,
+                46,
+                17,
+                41,
+                32
+              ],
+              "train_acc": 1.0,
+              "unemb_fourier_energy_frac": 0.2938
+            },
+            {
+              "emb_fourier_energy_frac": 0.2455,
+              "epoch": 1500,
+              "mean_fourier_energy_frac": 0.2912,
+              "restricted_fourier_acc": 0.2487,
+              "restricted_fourier_loss": 4.358971,
+              "test_acc": 0.4899,
+              "test_loss": 12.020499,
+              "top_frequencies": [
+                9,
+                19,
+                39,
+                10,
+                46,
+                32,
+                41,
+                56
+              ],
+              "train_acc": 1.0,
+              "unemb_fourier_energy_frac": 0.3369
+            },
+            {
+              "emb_fourier_energy_frac": 0.2802,
+              "epoch": 2000,
+              "mean_fourier_energy_frac": 0.3284,
+              "restricted_fourier_acc": 0.3848,
+              "restricted_fourier_loss": 3.075245,
+              "test_acc": 0.5046,
+              "test_loss": 9.04599,
+              "top_frequencies": [
+                9,
+                19,
+                39,
+                46,
+                10,
+                32,
+                56,
+                41
+              ],
+              "train_acc": 1.0,
+              "unemb_fourier_energy_frac": 0.3765
+            },
+            {
+              "emb_fourier_energy_frac": 0.335,
+              "epoch": 2500,
+              "mean_fourier_energy_frac": 0.3875,
+              "restricted_fourier_acc": 0.6031,
+              "restricted_fourier_loss": 1.988925,
+              "test_acc": 0.5527,
+              "test_loss": 5.1257,
+              "top_frequencies": [
+                9,
+                19,
+                39,
+                41,
+                32,
+                13,
+                56,
+                46
+              ],
+              "train_acc": 1.0,
+              "unemb_fourier_energy_frac": 0.4399
+            }
+          ],
+          "mean_fourier_energy_frac": 0.3875,
+          "restricted_fourier_acc": 0.6031,
+          "restricted_fourier_loss": 1.988925,
+          "top_frequencies": [
+            9,
+            19,
+            39,
+            41,
+            32,
+            13,
+            56,
+            46
+          ],
+          "unemb_fourier_energy_frac": 0.4399
+        },
+        "seed_2": {
+          "emb_fourier_energy_frac": 0.3414,
+          "final_test_acc": 0.564,
+          "history": [
+            {
+              "emb_fourier_energy_frac": 0.1644,
+              "epoch": 0,
+              "mean_fourier_energy_frac": 0.1535,
+              "restricted_fourier_acc": 0.0103,
+              "restricted_fourier_loss": 4.748873,
+              "test_acc": 0.0089,
+              "test_loss": 4.868535,
+              "top_frequencies": [
+                42,
+                45,
+                16,
+                46,
+                19,
+                23,
+                25,
+                21
+              ],
+              "train_acc": 0.0077,
+              "unemb_fourier_energy_frac": 0.1425
+            },
+            {
+              "emb_fourier_energy_frac": 0.1716,
+              "epoch": 300,
+              "mean_fourier_energy_frac": 0.2037,
+              "restricted_fourier_acc": 0.0952,
+              "restricted_fourier_loss": 4.508269,
+              "test_acc": 0.4656,
+              "test_loss": 10.764072,
+              "top_frequencies": [
+                26,
+                25,
+                28,
+                46,
+                16,
+                56,
+                42,
+                3
+              ],
+              "train_acc": 0.9727,
+              "unemb_fourier_energy_frac": 0.2357
+            },
+            {
+              "emb_fourier_energy_frac": 0.1843,
+              "epoch": 600,
+              "mean_fourier_energy_frac": 0.2323,
+              "restricted_fourier_acc": 0.1502,
+              "restricted_fourier_loss": 4.091912,
+              "test_acc": 0.485,
+              "test_loss": 10.730647,
+              "top_frequencies": [
+                26,
+                25,
+                28,
+                46,
+                16,
+                29,
+                56,
+                3
+              ],
+              "train_acc": 0.9995,
+              "unemb_fourier_energy_frac": 0.2803
+            },
+            {
+              "emb_fourier_energy_frac": 0.2129,
+              "epoch": 1000,
+              "mean_fourier_energy_frac": 0.2606,
+              "restricted_fourier_acc": 0.203,
+              "restricted_fourier_loss": 3.767908,
+              "test_acc": 0.4918,
+              "test_loss": 9.680268,
+              "top_frequencies": [
+                26,
+                25,
+                28,
+                46,
+                16,
+                29,
+                56,
+                9
+              ],
+              "train_acc": 0.9997,
+              "unemb_fourier_energy_frac": 0.3084
+            },
+            {
+              "emb_fourier_energy_frac": 0.2498,
+              "epoch": 1500,
+              "mean_fourier_energy_frac": 0.2976,
+              "restricted_fourier_acc": 0.294,
+              "restricted_fourier_loss": 3.76714,
+              "test_acc": 0.4968,
+              "test_loss": 10.278661,
+              "top_frequencies": [
+                26,
+                25,
+                28,
+                46,
+                16,
+                29,
+                56,
+                9
+              ],
+              "train_acc": 1.0,
+              "unemb_fourier_energy_frac": 0.3455
+            },
+            {
+              "emb_fourier_energy_frac": 0.2906,
+              "epoch": 2000,
+              "mean_fourier_energy_frac": 0.3388,
+              "restricted_fourier_acc": 0.433,
+              "restricted_fourier_loss": 3.159163,
+              "test_acc": 0.5084,
+              "test_loss": 8.781765,
+              "top_frequencies": [
+                26,
+                25,
+                28,
+                16,
+                46,
+                29,
+                9,
+                56
+              ],
+              "train_acc": 1.0,
+              "unemb_fourier_energy_frac": 0.387
+            },
+            {
+              "emb_fourier_energy_frac": 0.3414,
+              "epoch": 2500,
+              "mean_fourier_energy_frac": 0.3924,
+              "restricted_fourier_acc": 0.6186,
+              "restricted_fourier_loss": 1.861704,
+              "test_acc": 0.564,
+              "test_loss": 5.036679,
+              "top_frequencies": [
+                26,
+                25,
+                28,
+                16,
+                46,
+                29,
+                9,
+                56
+              ],
+              "train_acc": 1.0,
+              "unemb_fourier_energy_frac": 0.4434
+            }
+          ],
+          "mean_fourier_energy_frac": 0.3924,
+          "restricted_fourier_acc": 0.6186,
+          "restricted_fourier_loss": 1.861704,
+          "top_frequencies": [
+            26,
+            25,
+            28,
+            16,
+            46,
+            29,
+            9,
+            56
+          ],
+          "unemb_fourier_energy_frac": 0.4434
+        }
+      },
+      "A1_verdict": "FAIL",
+      "A2_grok_sqrt4_summary": {
+        "seed_0": {
+          "agg_kl": [
+            0.0008964295607747212,
+            0.00729055960841345,
+            0.00997581057494649,
+            0.013801235649818801,
+            0.019260112591338648,
+            0.027063071118186652,
+            0.0382187294696271,
+            0.05416656019926854,
+            0.07704454660293515,
+            0.1100779583810519,
+            0.15838407284274186,
+            0.23067688394067362,
+            0.34263846708716544,
+            0.5213172405605943,
+            0.8107113590663025,
+            1.2996261363534485
+          ],
+          "chi_perp": [
+            0.07945408260402854,
+            0.07947882235144743,
+            0.07948564800589776,
+            0.07949358459330652,
+            0.0795021387984275,
+            0.07951123120807913,
+            0.0795169276761587,
+            0.0795265147363285,
+            0.07953994984067528,
+            0.07956372713498004,
+            0.07962150716544347,
+            0.07971630131681358,
+            0.07987387285335028,
+            0.08000092325244787,
+            0.08029993269450915,
+            0.08049635702069266
+          ],
+          "collapse_rung": 14,
+          "doses": [
+            0.0,
+            1.0,
+            1.189207,
+            1.414214,
+            1.681793,
+            2.0,
+            2.378414,
+            2.828427,
+            3.363586,
+            4.0,
+            4.756828,
+            5.656854,
+            6.727171,
+            8.0,
+            9.513657,
+            11.313708
+          ],
+          "e_perp": [
+            240.06707772496878,
+            240.22291040755746,
+            240.27033507586424,
+            240.33417004529463,
+            240.42060168138164,
+            240.538259607943,
+            240.6992049395125,
+            240.9203127093689,
+            241.22532487864473,
+            241.64764749146005,
+            242.2344403424824,
+            243.05243241066327,
+            244.1959803745722,
+            245.7981968997447,
+            248.04858509426455,
+            251.2151595951929
+          ],
+          "lead_rungs": 3,
+          "max_agg_kl_exp": 2.7257,
+          "max_chi_exp": 2.7156,
+          "skill_acc": [
+            0.4833202660083771,
+            0.48285043239593506,
+            0.48285043239593506,
+            0.4830070436000824,
+            0.48285043239593506,
+            0.48285043239593506,
+            0.48285043239593506,
+            0.482537180185318,
+            0.48238056898117065,
+            0.48191070556640625,
+            0.48018792271614075,
+            0.4786217510700226,
+            0.47454971075057983,
+            0.47000783681869507,
+            0.45450273156166077,
+            0.43132340908050537
+          ],
+          "warn_rung": 11,
+          "warned_before_collapse": true
+        },
+        "seed_1": {
+          "agg_kl": [
+            0.0006938364788369035,
+            0.006265669303357081,
+            0.008598769853955194,
+            0.01192101200832625,
+            0.016652077947569576,
+            0.023382509764023514,
+            0.0329409131673462,
+            0.04649225516570469,
+            0.06571292079019318,
+            0.09315516000064895,
+            0.13269244146582596,
+            0.1899393532756266,
+            0.27381040122059613,
+            0.3988389262196599,
+            0.5878598244253416,
+            0.8785348403064784
+          ],
+          "chi_perp": [
+            0.07932723038070941,
+            0.07933645148777965,
+            0.07933726154563216,
+            0.07933978466173953,
+            0.07934027819100295,
+            0.07934047721076953,
+            0.07933919378957997,
+            0.07933769697863152,
+            0.07934514990179388,
+            0.07935194282412174,
+            0.0793518828975152,
+            0.07935934678038763,
+            0.07939170814235127,
+            0.07944421954410964,
+            0.07947050529737772,
+            0.079566354133757
+          ],
+          "collapse_rung": 15,
+          "doses": [
+            0.0,
+            1.0,
+            1.189207,
+            1.414214,
+            1.681793,
+            2.0,
+            2.378414,
+            2.828427,
+            3.363586,
+            4.0,
+            4.756828,
+            5.656854,
+            6.727171,
+            8.0,
+            9.513657,
+            11.313708
+          ],
+          "e_perp": [
+            448.99407162960523,
+            449.17797084447807,
+            449.2306560944623,
+            449.30071663004196,
+            449.39450572910476,
+            449.52082870410726,
+            449.69200491828724,
+            449.92518400329305,
+            450.2443868347678,
+            450.6833040819948,
+            451.2891436548267,
+            452.1282387224339,
+            453.2941891364098,
+            454.91913026705424,
+            457.18905181150245,
+            460.366808858473
+          ],
+          "lead_rungs": 7,
+          "max_agg_kl_exp": 2.3208,
+          "max_chi_exp": 4.022,
+          "skill_acc": [
+            0.5522317886352539,
+            0.550508975982666,
+            0.5506656169891357,
+            0.5506656169891357,
+            0.5508222579956055,
+            0.5508222579956055,
+            0.5506656169891357,
+            0.5506656169891357,
+            0.550508975982666,
+            0.5501957535743713,
+            0.5489428043365479,
+            0.5473766326904297,
+            0.5456538796424866,
+            0.5398590564727783,
+            0.5350039005279541,
+            0.5249804258346558
+          ],
+          "warn_rung": 8,
+          "warned_before_collapse": true
+        },
+        "seed_2": {
+          "agg_kl": [
+            0.0006883932215192292,
+            0.007515234032568236,
+            0.010323443658779581,
+            0.014301231993143726,
+            0.01994187291522369,
+            0.027963470514156964,
+            0.0394326342194249,
+            0.05594692660955721,
+            0.07988937969299663,
+            0.11468308890333746,
+            0.16514221154600828,
+            0.2385669322186617,
+            0.3465009781050999,
+            0.5074486957158733,
+            0.7541125680326275,
+            1.1523414928823976
+          ],
+          "chi_perp": [
+            0.07933506382028968,
+            0.07937437166522619,
+            0.07938261819511011,
+            0.07939049235410803,
+            0.07940384053923247,
+            0.0794281155582244,
+            0.07946479914913625,
+            0.0795110328454358,
+            0.07954974039412754,
+            0.07956230623347016,
+            0.07959412903458919,
+            0.07967626921959423,
+            0.07978202641304839,
+            0.07995040157282499,
+            0.08039231199324512,
+            0.0806069506668834
+          ],
+          "collapse_rung": 15,
+          "doses": [
+            0.0,
+            1.0,
+            1.189207,
+            1.414214,
+            1.681793,
+            2.0,
+            2.378414,
+            2.828427,
+            3.363586,
+            4.0,
+            4.756828,
+            5.656854,
+            6.727171,
+            8.0,
+            9.513657,
+            11.313708
+          ],
+          "e_perp": [
+            234.02685770417148,
+            234.071659135901,
+            234.09800675075164,
+            234.13674453114444,
+            234.19329169829192,
+            234.27537529844253,
+            234.3940072043474,
+            234.56485667644773,
+            234.81015707569966,
+            235.16132345375905,
+            235.66299831383066,
+            236.3788041860879,
+            237.3993647909613,
+            238.8539412050537,
+            240.9294046131643,
+            243.88785220549224
+          ],
+          "lead_rungs": 1,
+          "max_agg_kl_exp": 2.4487,
+          "max_chi_exp": 3.1235,
+          "skill_acc": [
+            0.5644479393959045,
+            0.5661706924438477,
+            0.5663273334503174,
+            0.5664839148521423,
+            0.5661706924438477,
+            0.5657008290290833,
+            0.5652310252189636,
+            0.5647611618041992,
+            0.5638214349746704,
+            0.5627251267433167,
+            0.5628817677497864,
+            0.562411904335022,
+            0.5600626468658447,
+            0.5559905767440796,
+            0.5448707938194275,
+            0.524040699005127
+          ],
+          "warn_rung": 14,
+          "warned_before_collapse": true
+        }
+      },
+      "A2_hopfield_sqrt4_summary": {
+        "seed_0": {
+          "individual_warn_rate": 0.952,
+          "pop_collapse_rung": 11,
+          "pop_max_alpha_chi": 6.7938,
+          "pop_warn_rung": 13
+        },
+        "seed_1": {
+          "individual_warn_rate": 0.996,
+          "pop_collapse_rung": 11,
+          "pop_max_alpha_chi": 5.492,
+          "pop_warn_rung": 11
+        },
+        "seed_2": {
+          "individual_warn_rate": 0.996,
+          "pop_collapse_rung": 11,
+          "pop_max_alpha_chi": 4.5313,
+          "pop_warn_rung": 11
+        }
+      },
+      "A2_verdict": "PASS",
+      "A3_early_norm_hopfield_summary": {
+        "seed_0": {
+          "adult_to_early_ratio": 1.8629,
+          "norm_by_tau": {
+            "0": 4.1136,
+            "1": 4.08,
+            "16": 7.5978,
+            "2": 4.2587,
+            "32": 8.0791,
+            "4": 4.9392,
+            "8": 6.2954,
+            "adult": 8.1187
+          },
+          "v50_adult": 1.125,
+          "v50_by_tau": {
+            "0": 0.5041,
+            "1": 0.6039,
+            "16": 1.125,
+            "2": 0.7007,
+            "32": 1.125,
+            "4": 0.8477,
+            "8": 1.0773,
+            "adult": 1.125
+          },
+          "v50_early_norm_lt_6_5": 0.6039
+        },
+        "seed_1": {
+          "adult_to_early_ratio": 1.8691,
+          "norm_by_tau": {
+            "0": 4.1172,
+            "1": 4.0845,
+            "16": 7.6089,
+            "2": 4.2669,
+            "32": 8.0851,
+            "4": 4.9559,
+            "8": 6.3143,
+            "adult": 8.1241
+          },
+          "v50_adult": 1.125,
+          "v50_by_tau": {
+            "0": 0.4984,
+            "1": 0.6019,
+            "16": 1.125,
+            "2": 0.6979,
+            "32": 1.125,
+            "4": 0.8467,
+            "8": 1.0889,
+            "adult": 1.125
+          },
+          "v50_early_norm_lt_6_5": 0.6019
+        },
+        "seed_2": {
+          "adult_to_early_ratio": 1.8461,
+          "norm_by_tau": {
+            "0": 4.1222,
+            "1": 4.0874,
+            "16": 7.6032,
+            "2": 4.264,
+            "32": 8.0915,
+            "4": 4.9407,
+            "8": 6.2942,
+            "adult": 8.1322
+          },
+          "v50_adult": 1.125,
+          "v50_by_tau": {
+            "0": 0.5065,
+            "1": 0.6094,
+            "16": 1.125,
+            "2": 0.7082,
+            "32": 1.125,
+            "4": 0.8547,
+            "8": 1.0872,
+            "adult": 1.125
+          },
+          "v50_early_norm_lt_6_5": 0.6094
+        }
+      },
+      "A3_grok_pre_vs_post_v50": {
+        "seed_0": {
+          "grok_consolidation_ratio": 1.0,
+          "post_grok_epoch2500_v50": 2.0,
+          "pre_grok_epoch300_v50": 2.0
+        },
+        "seed_1": {
+          "grok_consolidation_ratio": 0.5,
+          "post_grok_epoch2500_v50": 1.0,
+          "pre_grok_epoch300_v50": 2.0
+        },
+        "seed_2": {
+          "grok_consolidation_ratio": 1.0,
+          "post_grok_epoch2500_v50": 2.0,
+          "pre_grok_epoch300_v50": 2.0
+        }
+      },
+      "A3_verdict": "FAIL",
+      "gpu_device": "NVIDIA GeForce RTX 3050 Laptop GPU",
+      "overall_study_verdict": "FAIL",
+      "peak_vram_mb": 724.74,
+      "study_id": "SMP_V3_1_STUDY_A_GROKKING_INDRAS"
+    },
+    "prev_hash": "3995e9cf88bd2298461f5238b7a54206503f5fdc4f913f55f170dce75d173bfc",
+    "study_id": "SMP_V3_1_STUDY_A_GROKKING_INDRAS",
+    "timestamp_utc": "2026-11-18T19:09:29Z"
+  },
+  {
+    "entry_hash": "f669e85f519ce3e056ea3ab68248edda35b1fdee5750cd00f519e83c82839aeb",
+    "entry_type": "SEALED_PREDICTION",
+    "index": 35,
+    "payload": {
+      "gpu_device": "NVIDIA GeForce RTX 3050 Laptop GPU",
+      "predictions": {
+        "B1": "Across Pythia-70M-deduped training horizons (step4000 -> step143000), baseline NLL decreases monotonically while certified safe quantization dose s_cert(5% NLL) shrinks and alpha_chi_perp > 2.5 warns before collapse.",
+        "B2": "In a 4-agent voltage-gated Interactome backed by SmolLM2-135M hidden vectors, Fiedler delta_lambda2 and alpha_chi_perp warn ahead of swarm derailment, and consensus exit cost v50(tau=8) > v50(tau=1)."
+      },
+      "protocol_version": "SMP_v3_1_StudyB_PolyPythia_Interactome",
+      "study_id": "SMP_V3_1_STUDY_B_POLYPYTHIA_INTERACTOME"
+    },
+    "prev_hash": "651653a8cadc390034a83f877dfdcc3d41080c0a58ce301b1bbbb5f2a4c5ba44",
+    "study_id": "SMP_V3_1_STUDY_B_POLYPYTHIA_INTERACTOME",
+    "timestamp_utc": "2026-11-18T19:10:10Z"
+  },
+  {
+    "entry_hash": "c866e81218c2bc19db74d143ef8652a3415cf3a2f44d464da911b12e148fb3cc",
+    "entry_type": "RUN_VERDICT",
+    "index": 36,
+    "payload": {
+      "B1_calibration_certificate": {
+        "baseline_assay_signal": 6.2632,
+        "calibrated_dose_ladder": [
+          0.0,
+          0.003121,
+          0.004414,
+          0.006242,
+          0.008827,
+          0.012483,
+          0.017654,
+          0.024967,
+          0.035309,
+          0.049934,
+          0.070617
+        ],
+        "calibration_status": "PASS",
+        "estimated_s_crit_ec50": 0.024967,
+        "pilot_probe_records": [
+          {
+            "dose": 0.005,
+            "e_perp": 9.976082559754882,
+            "transition_fraction": 0.022
+          },
+          {
+            "dose": 0.01,
+            "e_perp": 38.80711918676613,
+            "transition_fraction": 0.1007
+          },
+          {
+            "dose": 0.02,
+            "e_perp": 139.97103096254693,
+            "transition_fraction": 0.3348
+          },
+          {
+            "dose": 0.04,
+            "e_perp": 532.3174478733999,
+            "transition_fraction": 1.0
+          },
+          {
+            "dose": 0.08,
+            "e_perp": 1206.8504885286686,
+            "transition_fraction": 1.0
+          },
+          {
+            "dose": 0.113137,
+            "e_perp": 1489.506731875072,
+            "transition_fraction": 1.0
+          }
+        ],
+        "positive_control_max_effect": 1.0,
+        "sham_e_perp_floor": 0.0
+      },
+      "B1_polypythias_summary": {
+        "step143000": {
+          "alpha_chi": [
+            null,
+            null,
+            1.0084,
+            0.1513,
+            -0.3466,
+            0.4398,
+            0.244,
+            1.5032,
+            -1.8137,
+            -0.4183,
+            1.1283,
+            -0.1739,
+            -1.2115
+          ],
+          "alpha_perp": [
+            null,
+            null,
+            0.4253,
+            0.4311,
+            0.5572,
+            1.8507,
+            0.8879,
+            1.1755,
+            1.978,
+            1.5972,
+            0.5828,
+            2.1395,
+            2.4304
+          ],
+          "baseline_nll": 6.3055,
+          "baseline_qa_acc": 0.5,
+          "baseline_qa_margin": 0.71159,
+          "collapse_rung": 5,
+          "goodhart_b1": {
+            "goodhart_elasticity": 0.7306,
+            "goodhart_overoptimization_divergence": 0.1054,
+            "goodhart_tipping_dose_s_gh": 0.01,
+            "goodhart_tipping_rung": 5,
+            "lead_rungs_before_goodhart": null,
+            "orthogonal_warning_dose_s_warn": null,
+            "orthogonal_warning_rung": null,
+            "utility_retention_at_max_dose": 0.2561,
+            "warned_before_goodhart": false
+          },
+          "max_alpha_chi_perp": 1.5032,
+          "revision": "step143000",
+          "s_cert_5pct_nll": 0.009364,
+          "step_num": 143000,
+          "warn_rung": null,
+          "warned_before_collapse": false
+        },
+        "step16000": {
+          "alpha_chi": [
+            null,
+            null,
+            2.4216,
+            -0.3458,
+            0.4978,
+            1.9416,
+            -2.042,
+            1.4389,
+            1.3428,
+            -0.3382,
+            0.3283,
+            -0.3048,
+            -0.2684
+          ],
+          "alpha_perp": [
+            null,
+            null,
+            6.1937,
+            0.2415,
+            0.2355,
+            1.5237,
+            -0.096,
+            3.3267,
+            -1.0236,
+            1.3101,
+            1.884,
+            2.046,
+            0.928
+          ],
+          "baseline_nll": 6.1222,
+          "baseline_qa_acc": 0.5,
+          "baseline_qa_margin": 0.634709,
+          "collapse_rung": 8,
+          "goodhart_b1": {
+            "goodhart_elasticity": 0.5063,
+            "goodhart_overoptimization_divergence": 0.0497,
+            "goodhart_tipping_dose_s_gh": 0.028284,
+            "goodhart_tipping_rung": 8,
+            "lead_rungs_before_goodhart": null,
+            "orthogonal_warning_dose_s_warn": null,
+            "orthogonal_warning_rung": null,
+            "utility_retention_at_max_dose": 0.4695,
+            "warned_before_goodhart": false
+          },
+          "max_alpha_chi_perp": 2.4216,
+          "revision": "step16000",
+          "s_cert_5pct_nll": 0.020189,
+          "step_num": 16000,
+          "warn_rung": null,
+          "warned_before_collapse": false
+        },
+        "step4000": {
+          "alpha_chi": [
+            null,
+            null,
+            -3.6282,
+            -4.3934,
+            7.79,
+            -1.1344,
+            -1.1928,
+            4.2306,
+            -0.9015,
+            -0.2154,
+            -0.4463,
+            0.5747,
+            -0.5895
+          ],
+          "alpha_perp": [
+            null,
+            null,
+            -1.1069,
+            -6.5401,
+            7.5576,
+            0.8782,
+            -1.5931,
+            1.7686,
+            2.3895,
+            1.0434,
+            2.3691,
+            0.8021,
+            -0.0583
+          ],
+          "baseline_nll": 6.4018,
+          "baseline_qa_acc": 0.5,
+          "baseline_qa_margin": 1.227615,
+          "collapse_rung": 8,
+          "goodhart_b1": {
+            "goodhart_elasticity": 0.4548,
+            "goodhart_overoptimization_divergence": 0.0587,
+            "goodhart_tipping_dose_s_gh": 0.028284,
+            "goodhart_tipping_rung": 8,
+            "lead_rungs_before_goodhart": 4,
+            "orthogonal_warning_dose_s_warn": 0.007071,
+            "orthogonal_warning_rung": 4,
+            "utility_retention_at_max_dose": 0.5233,
+            "warned_before_goodhart": true
+          },
+          "max_alpha_chi_perp": 7.79,
+          "revision": "step4000",
+          "s_cert_5pct_nll": 0.02026,
+          "step_num": 4000,
+          "warn_rung": 4,
+          "warned_before_collapse": true
+        },
+        "step64000": {
+          "alpha_chi": [
+            null,
+            null,
+            -4.077,
+            -3.3576,
+            8.836,
+            0.0289,
+            0.5063,
+            -0.0257,
+            0.3687,
+            -0.971,
+            1.2128,
+            0.3845,
+            -1.1731
+          ],
+          "alpha_perp": [
+            null,
+            null,
+            -6.649,
+            -1.0335,
+            8.3878,
+            1.2661,
+            -0.5575,
+            0.8417,
+            2.0465,
+            1.1431,
+            0.0886,
+            1.5104,
+            1.5884
+          ],
+          "baseline_nll": 6.3041,
+          "baseline_qa_acc": 0.6667,
+          "baseline_qa_margin": 1.123577,
+          "collapse_rung": 6,
+          "goodhart_b1": {
+            "goodhart_elasticity": 0.517,
+            "goodhart_overoptimization_divergence": 0.0742,
+            "goodhart_tipping_dose_s_gh": 0.02,
+            "goodhart_tipping_rung": 7,
+            "lead_rungs_before_goodhart": 3,
+            "orthogonal_warning_dose_s_warn": 0.007071,
+            "orthogonal_warning_rung": 4,
+            "utility_retention_at_max_dose": 0.456,
+            "warned_before_goodhart": true
+          },
+          "max_alpha_chi_perp": 8.836,
+          "revision": "step64000",
+          "s_cert_5pct_nll": 0.013553,
+          "step_num": 64000,
+          "warn_rung": 4,
+          "warned_before_collapse": true
+        }
+      },
+      "B1_verdict": "PASS",
+      "B2_calibration_certificate": {
+        "baseline_assay_signal": 2.0,
+        "calibrated_dose_ladder": [
+          0.0,
+          0.603562,
+          0.853566,
+          1.207125,
+          1.707133,
+          2.41425,
+          3.414265,
+          4.8285,
+          6.82853,
+          9.657,
+          13.65706
+        ],
+        "calibration_status": "PASS",
+        "estimated_s_crit_ec50": 4.8285,
+        "pilot_probe_records": [
+          {
+            "dose": 0.5,
+            "e_perp": 0.02123749796436062,
+            "transition_fraction": 0.0
+          },
+          {
+            "dose": 1.0,
+            "e_perp": 0.08522996290390074,
+            "transition_fraction": 0.0
+          },
+          {
+            "dose": 2.0,
+            "e_perp": 0.351594461558984,
+            "transition_fraction": 0.0
+          },
+          {
+            "dose": 4.0,
+            "e_perp": 1.7507029708742992,
+            "transition_fraction": 0.0
+          },
+          {
+            "dose": 5.657,
+            "e_perp": 4.641432110536652,
+            "transition_fraction": 1.0
+          },
+          {
+            "dose": 8.0,
+            "e_perp": 9.774581703877809,
+            "transition_fraction": 1.0
+          },
+          {
+            "dose": 11.314,
+            "e_perp": 31.518921511246134,
+            "transition_fraction": 1.0
+          }
+        ],
+        "positive_control_max_effect": 1.0,
+        "sham_e_perp_floor": 1.1866846705288498e-06
+      },
+      "B2_interactome_summary": {
+        "alpha_chi": [
+          null,
+          null,
+          2.0416,
+          2.0514,
+          2.0791,
+          2.1514,
+          2.3727,
+          3.2001,
+          3.251,
+          2.192,
+          3.1264
+        ],
+        "alpha_perp": [
+          null,
+          null,
+          1.9995,
+          2.0102,
+          2.0271,
+          2.0619,
+          2.155,
+          2.4769,
+          2.8131,
+          2.1491,
+          3.378
+        ],
+        "consensus_hardening_ratio_tau8_vs_tau1": 3.0712,
+        "derail_fraction_at_c0_by_tau": {
+          "1": 1.0,
+          "2": 1.0,
+          "4": 1.0,
+          "8": 1.0
+        },
+        "ec50_interactome": 4.8285,
+        "goodhart_b2": {
+          "goodhart_elasticity": 0.2594,
+          "goodhart_overoptimization_divergence": 0.025,
+          "goodhart_tipping_dose_s_gh": 5.656854,
+          "goodhart_tipping_rung": 8,
+          "lead_rungs_before_goodhart": 1,
+          "orthogonal_warning_dose_s_warn": 4.0,
+          "orthogonal_warning_rung": 7,
+          "utility_retention_at_max_dose": 0.75,
+          "warned_before_goodhart": true
+        },
+        "lambda2_min_across_doses": 0.0,
+        "lambda2_sham": 5.5501,
+        "majority_derail_rung": 8,
+        "max_alpha_chi_perp": 3.251,
+        "smollm_vram_with_model_mb": 543.39,
+        "state_dim": 576,
+        "v50_by_tau": {
+          "1": 0.1293,
+          "2": 0.1506,
+          "4": 0.2124,
+          "8": 0.3971
+        },
+        "warn_rung_alpha_chi": 7,
+        "warn_rung_fiedler_frag": 9,
+        "warned_ahead_of_cascade": true
+      },
+      "B2_verdict": "PASS",
+      "gpu_device": "NVIDIA GeForce RTX 3050 Laptop GPU",
+      "overall_study_verdict": "PASS",
+      "peak_vram_mb": 548.8,
+      "study_id": "SMP_V3_1_STUDY_B_POLYPYTHIA_INTERACTOME"
+    },
+    "prev_hash": "f669e85f519ce3e056ea3ab68248edda35b1fdee5750cd00f519e83c82839aeb",
+    "study_id": "SMP_V3_1_STUDY_B_POLYPYTHIA_INTERACTOME",
+    "timestamp_utc": "2026-11-18T19:22:05Z"
+  },
+  {
+    "entry_hash": "dfcd5c0cc6a56e17d96da51f9722c3c8768cfa4d05bb67bf17ebb05b1aa8bdb8",
+    "entry_type": "RUN_VERDICT",
+    "index": 37,
+    "payload": {
+      "alpha_chi": 2.3546,
+      "budget_perp": 0.02,
+      "e_perp": 9.015167561738342e-05,
+      "evaluated_dose": 1.508886,
+      "exit_cost_v50": 0.5,
+      "gpu_device": "NVIDIA GeForce RTX 3050 Laptop GPU",
+      "max_alpha": 2.5,
+      "overall_study_verdict": "PASS",
+      "safe_ceiling_s_deg": 6.035545,
+      "selectivity": 0.9998,
+      "study_id": "SMP_V3_2_CI_GATE_HOPFIELD",
+      "warning_lead_rungs": 0
+    },
+    "prev_hash": "c866e81218c2bc19db74d143ef8652a3415cf3a2f44d464da911b12e148fb3cc",
+    "study_id": "SMP_V3_2_CI_GATE_HOPFIELD",
+    "timestamp_utc": "2026-11-18T21:40:39Z"
+  }
+]

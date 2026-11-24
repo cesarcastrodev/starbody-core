@@ -179,9 +179,12 @@ class StarbodyConnection:
         self.u_parallel_by_layer: Dict[int, torch.Tensor] = {}
         self.a_skew_by_layer: Dict[int, torch.Tensor] = {}
         self.baseline_mean_by_layer: Dict[int, torch.Tensor] = {}
+        self.baseline_energy_by_layer: Dict[int, float] = {}
+        self.baseline_rel_spread_by_layer: Dict[int, float] = {}
         self.calibration_result: Optional[Dict[str, Any]] = None
         self.ladder_result: Optional[Dict[str, Any]] = None
         self.last_latency_metrics: Optional[Dict[str, Any]] = None
+        self.last_benchmark_receipt: Optional[Dict[str, Any]] = None
         self.last_compiled_path: Optional[Path] = None
 
     def _build_knob(self) -> InterventionKnob:
@@ -226,11 +229,24 @@ class StarbodyConnection:
         skew_errs: List[float] = []
         sham_diffs: List[float] = []
         serving_diffs: List[float] = []
+        serving_rel_rms_list: List[float] = []
 
         for l_idx in self.layer_indices:
-            self.baseline_mean_by_layer[l_idx] = acts_a[l_idx].mean(dim=(0, 1)).to(torch.float32)  # [d_model]
             u_64 = self.u_parallel_by_layer[l_idx].to(torch.float64)
             a_64 = self.a_skew_by_layer[l_idx].to(torch.float64)
+            c_64 = acts_a[l_idx][:, -1, :].to(torch.float64)  # [batch, d_model]
+            ref_64 = c_64.mean(dim=0)  # [d_model]
+            self.baseline_mean_by_layer[l_idx] = ref_64.to(torch.float32)
+            base_en = float(torch.mean(torch.sum(c_64 ** 2, dim=-1)).clamp(min=1e-12).item())
+            self.baseline_energy_by_layer[l_idx] = base_en
+            d_can = c_64 - ref_64.unsqueeze(0)
+            dp_can = d_can - (d_can @ u_64) @ u_64.T
+            ep_can = torch.sum(dp_can ** 2, dim=-1)  # [batch]
+            en_can = torch.sum(c_64 ** 2, dim=-1)  # [batch]
+            denom_can = torch.maximum(en_can, torch.full_like(en_can, max(base_en, 1.0)))
+            rel_can = ep_can / denom_can
+            self.baseline_rel_spread_by_layer[l_idx] = float(torch.max(rel_can).item()) if rel_can.numel() > 0 else 0.0
+
             ident_64 = torch.eye(self.rank_k, dtype=torch.float64, device=u_64.device)
             ortho_errs.append(float(torch.linalg.norm(u_64.T @ u_64 - ident_64).item()))
             skew_errs.append(float(torch.linalg.norm(a_64 + a_64.T).item()))
@@ -240,11 +256,16 @@ class StarbodyConnection:
 
             cast_acts = acts_a[l_idx].to(self.serving_dtype).to(torch.float32)
             diff_srv = (acts_a[l_idx] - cast_acts).to(torch.float64)
-            serving_diffs.append(float(torch.mean(torch.sum(diff_srv ** 2, dim=-1)).item()))
+            x_64 = acts_a[l_idx].to(torch.float64)
+            sig_energy = float(torch.mean(torch.sum(x_64 ** 2, dim=-1)).clamp(min=1e-12).item())
+            srv_mse = float(torch.mean(torch.sum(diff_srv ** 2, dim=-1)).item())
+            serving_diffs.append(srv_mse)
+            serving_rel_rms_list.append(math.sqrt(max(srv_mse, 0.0) / sig_energy))
 
         sham_floor_f32 = max(sham_diffs) if sham_diffs else 0.0
         serving_floor = max(serving_diffs) if serving_diffs else 0.0
-        s_min_serving = max(1e-5, math.sqrt(max(serving_floor, 1e-12)))
+        serving_floor_rel_rms = max(serving_rel_rms_list) if serving_rel_rms_list else 0.0
+        s_min_serving = max(1e-5, serving_floor_rel_rms)
 
         max_ortho = max(ortho_errs) if ortho_errs else 0.0
         max_skew = max(skew_errs) if skew_errs else 0.0
@@ -260,6 +281,7 @@ class StarbodyConnection:
             "serving_dtype": self.serving_dtype_name,
             "sham_floor_f32": sham_floor_f32,
             "serving_floor_e_perp": serving_floor,
+            "serving_floor_rel_rms": round(serving_floor_rel_rms, 6),
             "s_min_serving_floor": round(s_min_serving, 6),
             "max_ortho_err": max_ortho,
             "max_skew_err": max_skew,
@@ -268,7 +290,7 @@ class StarbodyConnection:
                 "tf32_locked": bool(tf32_locked),
                 "sham_floor_ok": bool(sham_floor_f32 < 1e-4),
                 "ortho_ok": bool(max_ortho < 1e-5 and max_skew < 1e-6),
-                "serving_floor_ok": True,
+                "serving_floor_ok": bool(s_min_serving < 0.25),
             },
         }
         return self.calibration_result
@@ -294,8 +316,11 @@ class StarbodyConnection:
         self.u_parallel_by_layer = {}
         self.a_skew_by_layer = {}
         self.baseline_mean_by_layer = {}
+        self.baseline_energy_by_layer = {}
+        self.baseline_rel_spread_by_layer = {}
         self.calibration_result = None
         self.ladder_result = None
+        self.last_benchmark_receipt = None
 
         return {
             "target_pairs": [[a if isinstance(a, str) else "<tensor>", b if isinstance(b, str) else "<tensor>"] for a, b in self.target_pairs],
@@ -529,6 +554,36 @@ class StarbodyConnection:
             **latency_info,
         }
 
+    def run_benchmarks(
+        self,
+        suite: str = "starbody_core_v1",
+        dose_s: Optional[float] = None,
+        tasks: Optional[Sequence[str]] = None,
+        limit: int = 20,
+        external_report: Optional[Union[str, Path]] = None,
+        baseline_report: Optional[Union[str, Path]] = None,
+    ) -> Dict[str, Any]:
+        """Executes built-in or `lm-eval` benchmarks or imports external JSON receipts."""
+        from starbody.benchmarks import (
+            evaluate_core_benchmarks,
+            import_external_benchmark_receipt,
+            run_lm_eval_benchmark,
+        )
+
+        if external_report is not None:
+            receipt = import_external_benchmark_receipt(
+                external_report,
+                baseline_report_path=baseline_report,
+            )
+        elif str(suite).lower().strip() in ("lm_eval", "lm-eval"):
+            task_list = list(tasks) if tasks else ["hellaswag"]
+            receipt = run_lm_eval_benchmark(self, tasks=task_list, dose_s=dose_s, limit=limit)
+        else:
+            receipt = evaluate_core_benchmarks(self, dose_s=dose_s)
+
+        self.last_benchmark_receipt = receipt
+        return receipt
+
     def compile(
         self,
         output_path: Union[str, Path],
@@ -567,6 +622,17 @@ class StarbodyConnection:
             "guard_policy": {
                 "max_e_perp_budget": float(max_e_perp_budget),
                 "attenuation_factor": 0.5,
+                "normalization": "baseline_energy",
+                "spread_safety_multiplier": 2.5,
+                "min_dose_floor_ratio": 0.05,
+                "baseline_energy_by_layer": {
+                    str(l_idx): round(float(self.baseline_energy_by_layer.get(l_idx, 1.0)), 6)
+                    for l_idx in self.layer_indices
+                },
+                "baseline_rel_spread_by_layer": {
+                    str(l_idx): round(float(self.baseline_rel_spread_by_layer.get(l_idx, 0.0)), 6)
+                    for l_idx in self.layer_indices
+                },
             },
         }
         receipt: Dict[str, Any] = {
@@ -576,6 +642,8 @@ class StarbodyConnection:
         }
         if self.last_latency_metrics is not None:
             receipt["latency"] = self.last_latency_metrics
+        if self.last_benchmark_receipt is not None:
+            receipt["benchmarks"] = self.last_benchmark_receipt
         compiled = compile_cartridge(
             output_path=output_path,
             manifest_dict=manifest,
@@ -642,6 +710,16 @@ class StarbodyConnection:
                             self.test_prompt,
                             str(params.get("prompt", self.canaries[0])),
                             params.get("dose_s"),
+                        )
+                    elif cmd == "RUN_BENCHMARKS":
+                        res = await asyncio.to_thread(
+                            self.run_benchmarks,
+                            str(params.get("suite", "starbody_core_v1")),
+                            params.get("dose_s"),
+                            params.get("tasks"),
+                            int(params.get("limit", 20)),
+                            params.get("external_report"),
+                            params.get("baseline_report"),
                         )
                     elif cmd == "COMPILE_CARTRIDGE":
                         out_p = params.get("output_path", f"./smp_local_vault/{self.model_name.replace('/', '_')}.starbody")

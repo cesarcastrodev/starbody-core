@@ -1,30 +1,31 @@
-# starbody-core — Synergetic Manifold Pharmacology (SMP v3.3)
+# starbody-core — Synergetic Manifold Pharmacology (SMP v3.4)
 
-Pure-emergent geometric metrology, 3-line developer onboarding (`starbody/`), universal model adapters & intervention knobs, cryptographically verified `.starbody` Ed25519 cartridges, and SHA-256 hash-chained verification for neural networks and multi-agent syncytia.
+Pure-emergent geometric metrology, 3-line developer onboarding (`starbody/`), universal model adapters & intervention knobs, multi-cartridge subspace composition, standardized capability benchmark receipts, OpenAI-compatible multi-tenant serving, and cryptographically verified Ed25519 `.starbody` cartridges.
 
 ---
 
-## Protocol & Onboarding Overview (SMP v3.3 + Sprint 1)
+## Protocol & Capabilities Overview (SMP v3.4 Sprint 2)
 
 - **3-Line Developer Onboarding (`starbody.connect`):**
   ```python
   import starbody
 
   conn = starbody.connect(model, intervention="geodesic_so_k", target_pairs=pairs, canaries=canaries)
-  cal = conn.calibrate()               # Phase-I gates: TF32 lock, sham floor, QR orthogonality, serving floor
+  cal = conn.calibrate()               # Phase-I gates: TF32 lock, sham floor, QR orthogonality, relative RMS s_min
+  bench = conn.run_benchmarks()        # Standardized baseline vs. steered capability receipt (starbody_core_v1 / lm-eval)
   conn.compile("my_steer.starbody")    # Compiles safetensors + SHA-256 + Ed25519 signed cartridge
-  # Optional live workbench streaming: conn.serve_studio("ws://127.0.0.1:8000/ws/worker")
   ```
-- **Universal Model Adapters (`starbody/adapters.py`):**
-  - `HuggingFaceAdapter`: Auto-introspects decoder layers (`model.model.layers`, `model.gpt_neox.layers`, `model.transformer.h`, `model.layers`), preserves exact tuple hook outputs, captures `float32` activations under `torch.no_grad()`, and extracts orthonormal QR tangent bases $U_\parallel \in \mathbb{R}^{d \times k}$ ($\|U^T U - I_k\|_F < 10^{-5}$) and skew-symmetric generators $A \in \mathbb{R}^{k \times k}$ ($\|A + A^T\|_F < 10^{-6}$) verified in `float64`.
-  - `AgentProxyAdapter`: Async/sync wrapper projecting multi-agent turn logs (`List[Dict[str, str]]`) into `[M, D]` states for `InteractomeLaplacianTracker` to stream live Fiedler connectivity $\lambda_2$ and reversal barrier $v_{50}(\tau)$.
-- **Universal Intervention Knobs (`starbody/interventions.py`):**
-  - `GeodesicSOKKnob`: Exact orthogonal rotation $R(s) = \exp(sA)$ inside $U_\parallel$ preserving hidden-state $L_2$ norms, with batched multi-tenant per-row dosing (`dose_s: float | Sequence[float] | Tensor`), bit-exact zero-dose identity, `position_mode` (`"all"`, `"prefill_only"`, `"decode_only"`, `"last_token"`), `normalize_by_layers` scaling (`1 / len(target_indices)`), and `try...finally` hook cleanup.
-  - `LinearPatchKnob`: Rank-1 residual addition control for selectivity benchmarking.
-  - `QuantizationStepKnob`: Non-destructive uniform step quantization ($\Delta = s$) with guaranteed weight restoration.
-  - `LoRAAlphaKnob`: Dynamic continuous scaling of LoRA adapter `scaling` factors with exit restoration.
-- **Zero-Pickle `.starbody` Cartridges (`starbody/cartridge.py`):** Deterministic ZIP bundles holding `tensors.safetensors`, canonical `receipt.json`, SHA-256 `manifest.json` pinned to the `ledger_smp_v1.json` head, and optional Ed25519 signature (`signature.ed25519`). Fail-closed verification via `verify_cartridge(...)` and runtime off-manifold attenuation (`guard=True` cuts dose 50% when $E_\perp > \text{budget}$) via `apply_cartridge(...)`.
-- **Zero Synthetic Multipliers & Early Quadrature Lock-In ($\alpha(\chi_\perp) > 2.5$):** All exponents and reversal costs ($v_{50}$) emerge unforced from activations, Hopfield ODE dynamics, or Graph Laplacian conductance mechanics.
+- **Scale-Invariant Relative `s_min` & Energy-Normalized Runtime Guard:**
+  - `calibrate()` computes relative RMS quantization noise (`serving_floor_rel_rms = sqrt(srv_mse / mean(||x||^2))`) so `s_min_serving_floor` stays scale-invariant in radian units across architectures (`serving_floor_ok` requires `< 0.25`).
+  - `build_normalized_guard_fn()` normalizes live orthogonal residuals against per-layer `baseline_energy_by_layer` and `baseline_rel_spread_by_layer`, eliminating false decode-step attenuation while preserving bounded 50% dose decay down to `min_dose_floor_ratio` (`0.05`) on true off-manifold drift.
+- **Multi-Cartridge Subspace Orthogonalizer (`starbody/compose.py`, `starbody.compose`):**
+  - Verifies two or more `.starbody` cartridges fail-closed, computes pairwise principal-angle overlap matrices in `float64`, enforces optional `max_interference_cos` collision guards, orthonormalizes the union subspace via thin SVD + reduced QR without allocating `d_model x d_model` matrices, projects weighted Lie-algebra generators `A_joint`, and asserts exact generator reconstruction bounds.
+- **Standardized Benchmark Receipts (`starbody/benchmarks.py`):**
+  - Built-in 12-item `starbody_core_v1` (`truthful_mc`, `reasoning_mc`, `safety_refusal`) with tensor-only fallback, live `lm-eval` (`lm_eval.simple_evaluate`) wrapper, and SHA-256-verified external JSON log importers for both `lm-eval` and `Inspect AI`.
+- **OpenAI-Compatible Multi-Tenant Steering Proxy (`starbody/serve.py`):**
+  - `StarbodyServingRuntime` and `create_serving_app()` serve `/health`, `/v1/models`, `/v1/chat/completions` (JSON + SSE `stream=True`, `model:cartridge` aliases, `X-Starbody-*` headers, `strict_bounds`), `/v1/completions`, and `/v1/starbody/batch_completions` (left-padded single-batch multi-tenant routing with bit-exact zero-dose identity).
+- **Universal Model Adapters & Knobs (`starbody/adapters.py`, `starbody/interventions.py`):**
+  - `HuggingFaceAdapter` (`model.model.layers`, `model.gpt_neox.layers`, `model.transformer.h`, `model.layers`), `AgentProxyAdapter` (Interactome Fiedler `lambda_2` / `v_50`), `GeodesicSOKKnob`, `LinearPatchKnob`, `QuantizationStepKnob`, and `LoRAAlphaKnob`.
 
 ---
 
@@ -33,9 +34,8 @@ Pure-emergent geometric metrology, 3-line developer onboarding (`starbody/`), un
 All modules enforce strict determinism and numerical fidelity via `enforce_precision_and_seed()`:
 
 - **Strict IEEE-754 `float32` Tensor Execution:** `torch.backends.cuda.matmul.allow_tf32 = False`, `torch.backends.cudnn.allow_tf32 = False`, and `torch.set_float32_matmul_precision("highest")`.
-- **High-Precision Accumulators:** QR decomposition, SVD, exposure sums ($E_\parallel, E_\perp$), orthogonal invariance metrics, and lock-in susceptibility quadrature are accumulated in `float64` with `1e-12` epsilon clamping.
-- **4 GB VRAM Guard:** Real HF models run in strict `float32` (`low_cpu_mem_usage=True`, `requires_grad_(False)`) with pre-flight VRAM budgeting (`<= 3072 MB` cap on NVIDIA GeForce RTX 3050 Laptop GPU; e.g., `HuggingFaceTB/SmolLM2-135M` peaks at `~537 MB`).
-- **Pre-Sealing Gate (`PilotCalibrationGate`):** Sham floor checks ($E_\perp(0) < 10^{-4}$), SNR verification, and $EC_{50}$ centering prior to sealing.
+- **High-Precision Accumulators:** QR decomposition, SVD, exposure sums ($E_\parallel, E_\perp$), orthogonal invariance metrics, normalized guard ratios, and lock-in susceptibility quadrature run in `float64` with `1e-12` epsilon clamping.
+- **4 GB VRAM Guard:** Real HF models run in strict `float32` (`low_cpu_mem_usage=True`, `requires_grad_(False)`) with pre-flight VRAM budgeting (`<= 3072 MB` cap on NVIDIA GeForce RTX 3050 Laptop GPU; e.g., `HuggingFaceTB/SmolLM2-135M` peaks around `~537–551 MB` across calibration, composition, benchmarks, and serving).
 
 ---
 
@@ -56,14 +56,14 @@ pip install -e ".[dev]"
 # 2. Run the Pre-Sealing Instrument Audit
 python smp_core.py
 
-# 3. Generate an Ed25519 cartridge signing keypair
-python starbody_cli.py keygen --out-dir ./smp_local_vault/keys
+# 3. Compose two signed cartridges with interference audit
+python starbody_cli.py compose --cartridges a.starbody b.starbody --output composed.starbody
 
-# 4. Run the CI Gate CLI against a substrate dose
-python starbody_cli.py gate --substrate hopfield --target-dose 1.5 --budget-perp 0.02 --max-alpha 2.5 --no-ledger
+# 4. Run capability benchmark receipts or import lm-eval/Inspect AI logs
+python starbody_cli.py eval --model sandbox --suite starbody_core_v1 --dose 0.10
 
-# 5. Launch Starbody Studio cleanly from the CLI (when starbody-studio server is installed)
-python starbody_cli.py studio --model HuggingFaceTB/SmolLM2-135M --local-only
+# 5. Boot the OpenAI-compatible multi-tenant steering proxy
+python starbody_cli.py serve --model HuggingFaceTB/SmolLM2-135M --cartridge joint=composed.starbody --port 8080 --local-only
 
 # 6. Run automated tests
 pytest -v

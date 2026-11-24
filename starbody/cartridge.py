@@ -19,6 +19,7 @@ import hmac
 import io
 import json
 import logging
+import math
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterator, List, Optional, Tuple, Union
 import warnings
@@ -64,6 +65,10 @@ class GuardRuntimeState:
     active_dose_s: float
     attenuation_count: int = 0
     last_e_perp: float = 0.0
+    last_raw_e_perp: float = 0.0
+    effective_threshold: float = 0.0
+    normalization: str = "baseline_energy"
+    min_dose_floor_ratio: float = 0.05
     events: List[Dict[str, Any]] = field(default_factory=list)
 
 
@@ -410,6 +415,103 @@ class AttachedCartridgeHandle:
             self._detached = True
 
 
+def build_normalized_guard_fn(
+    verified: VerifiedCartridge,
+    baselines_64: Dict[int, torch.Tensor],
+    chosen_dose: float,
+    emit_warnings: bool = True,
+) -> Tuple[Callable[[int, torch.Tensor, torch.Tensor, AttachedController], None], GuardRuntimeState]:
+    """
+    Constructs an energy-normalized orthogonal-drift guard callback and telemetry state.
+    Normalizes last-token orthogonal residuals against calibrated baseline hidden-state
+    energy and canary dispersion so legitimate prompts across decoding steps are never
+    falsely attenuated while true off-manifold drift triggers bounded 50% decay.
+    """
+    guard_policy = verified.manifest.get("guard_policy") or {}
+    max_budget = float(guard_policy.get("max_e_perp_budget", 0.02))
+    attenuation_factor = float(guard_policy.get("attenuation_factor", 0.5))
+    normalization = str(guard_policy.get("normalization", "baseline_energy"))
+    spread_mult = float(guard_policy.get("spread_safety_multiplier", 2.5))
+    min_floor_ratio = float(guard_policy.get("min_dose_floor_ratio", 0.05))
+    base_energy_map = {int(k): float(v) for k, v in (guard_policy.get("baseline_energy_by_layer") or {}).items()}
+    base_spread_map = {int(k): float(v) for k, v in (guard_policy.get("baseline_rel_spread_by_layer") or {}).items()}
+
+    guard_state = GuardRuntimeState(
+        max_e_perp_budget=max_budget,
+        initial_dose_s=chosen_dose,
+        active_dose_s=chosen_dose,
+        normalization=normalization,
+        min_dose_floor_ratio=min_floor_ratio,
+    )
+
+    def _guard_fn(l_idx: int, x: torch.Tensor, u_mat: torch.Tensor, ctrl: AttachedController) -> None:
+        if not isinstance(ctrl.active_dose_s, (int, float)):
+            return
+        x_raw = x.detach().to(torch.float64)
+        x_64 = x_raw[:, -1, :] if x_raw.ndim == 3 else x_raw  # [batch, d_model]
+        ref_64 = baselines_64.get(l_idx)
+        if ref_64 is None:
+            baselines_64[l_idx] = x_64.mean(dim=0)
+            guard_state.last_e_perp = 0.0
+            guard_state.last_raw_e_perp = 0.0
+            return
+
+        delta_64 = x_64 - ref_64.unsqueeze(0)  # [batch, d_model]
+        u_64 = u_mat.detach().to(torch.float64)
+        proj_par = (delta_64 @ u_64) @ u_64.T
+        delta_perp = delta_64 - proj_par
+        raw_e_perp = float(torch.mean(torch.sum(delta_perp ** 2, dim=-1)).clamp(min=0.0).item())
+        x_energy = float(torch.mean(torch.sum(x_64 ** 2, dim=-1)).clamp(min=1e-12).item())
+
+        base_energy = base_energy_map.get(l_idx, max(float(torch.sum(ref_64 ** 2).item()), 1.0))
+        base_spread = base_spread_map.get(l_idx, 0.0)
+        denom = max(base_energy, x_energy, 1.0)
+        rel_e_perp = raw_e_perp / denom
+        rel_threshold = max_budget + spread_mult * base_spread
+        energy_spike_ratio = raw_e_perp / max(base_energy, 1.0)
+        spike_threshold = max(10.0, 16.0 * base_spread)
+
+        guard_state.last_e_perp = rel_e_perp
+        guard_state.last_raw_e_perp = raw_e_perp
+        guard_state.effective_threshold = rel_threshold
+
+        exceeded = (rel_e_perp > rel_threshold) or (base_spread > 0.0 and energy_spike_ratio > spike_threshold)
+        if exceeded:
+            prev = float(ctrl.active_dose_s)
+            if abs(prev) <= 1e-12:
+                return
+            floor_abs = abs(guard_state.initial_dose_s) * min_floor_ratio
+            candidate = prev * attenuation_factor
+            new_dose = math.copysign(max(abs(candidate), floor_abs), prev)
+            if abs(new_dose) >= abs(prev) - 1e-12:
+                return
+            ctrl.active_dose_s = new_dose
+            guard_state.active_dose_s = new_dose
+            guard_state.attenuation_count += 1
+            ev = {
+                "layer_idx": l_idx,
+                "e_perp": rel_e_perp,
+                "raw_e_perp": raw_e_perp,
+                "rel_e_perp": rel_e_perp,
+                "budget": max_budget,
+                "effective_threshold": rel_threshold,
+                "prev_dose_s": prev,
+                "attenuated_dose_s": new_dose,
+            }
+            guard_state.events.append(ev)
+            ctrl.events.append(ev)
+            if emit_warnings:
+                msg = (
+                    f"[Starbody Guard] Normalized drift rel_E_perp={rel_e_perp:.4e} "
+                    f"(raw={raw_e_perp:.4e}) exceeded threshold={rel_threshold:.4e} "
+                    f"at layer {l_idx}; attenuating dose 50%: {prev:.5f} -> {new_dose:.5f}"
+                )
+                logger.warning(msg)
+                warnings.warn(msg, RuntimeWarning, stacklevel=2)
+
+    return _guard_fn, guard_state
+
+
 def apply_cartridge(
     model: torch.nn.Module,
     cartridge_path: Union[str, Path],
@@ -449,57 +551,10 @@ def apply_cartridge(
     chosen_dose = default_dose if dose_s is None else float(dose_s)
     chosen_dose = min(chosen_dose, ceiling)
 
-    guard_policy = verified.manifest.get("guard_policy", {})
-    max_budget = float(guard_policy.get("max_e_perp_budget", 0.02))
-    guard_state: Optional[GuardRuntimeState] = (
-        GuardRuntimeState(
-            max_e_perp_budget=max_budget,
-            initial_dose_s=chosen_dose,
-            active_dose_s=chosen_dose,
-        )
-        if guard
-        else None
-    )
-
-    def _guard_fn(l_idx: int, x: torch.Tensor, u_mat: torch.Tensor, ctrl: AttachedController) -> None:
-        if guard_state is None:
-            return
-        x_64 = x.detach().to(torch.float64)  # [batch, seq_len, d_model]
-        ref_64 = baselines_64.get(l_idx)
-        if ref_64 is None:
-            baselines_64[l_idx] = x_64.mean(dim=(0, 1))
-            guard_state.last_e_perp = 0.0
-            return
-
-        delta_64 = (x_64 - ref_64.view(1, 1, -1)).reshape(-1, x_64.shape[-1])
-        u_64 = u_mat.detach().to(torch.float64)
-        proj_par = (delta_64 @ u_64) @ u_64.T
-        delta_perp = delta_64 - proj_par
-        e_perp = float(torch.mean(torch.sum(delta_perp ** 2, dim=-1)).clamp(min=0.0).item())
-        guard_state.last_e_perp = e_perp
-
-        if e_perp > guard_state.max_e_perp_budget:
-            prev = ctrl.active_dose_s
-            new_dose = prev * 0.5
-            ctrl.active_dose_s = new_dose
-            guard_state.active_dose_s = new_dose
-            guard_state.attenuation_count += 1
-            ev = {
-                "layer_idx": l_idx,
-                "e_perp": e_perp,
-                "budget": guard_state.max_e_perp_budget,
-                "prev_dose_s": prev,
-                "attenuated_dose_s": new_dose,
-            }
-            guard_state.events.append(ev)
-            ctrl.events.append(ev)
-            msg = (
-                f"[Starbody Guard] Orthogonal drift E_perp={e_perp:.4e} exceeded "
-                f"budget={guard_state.max_e_perp_budget:.4e} at layer {l_idx}; "
-                f"attenuating dose 50%: {prev:.5f} -> {new_dose:.5f}"
-            )
-            logger.warning(msg)
-            warnings.warn(msg, RuntimeWarning, stacklevel=2)
+    guard_fn: Optional[Callable[[int, torch.Tensor, torch.Tensor, AttachedController], None]] = None
+    guard_state: Optional[GuardRuntimeState] = None
+    if guard:
+        guard_fn, guard_state = build_normalized_guard_fn(verified, baselines_64, chosen_dose, emit_warnings=True)
 
     if hasattr(model, "starbody_detach") and callable(getattr(model, "starbody_detach")):
         try:
@@ -510,7 +565,7 @@ def apply_cartridge(
     knob = GeodesicSOKKnob(
         u_parallel_by_layer=u_by_layer,
         a_skew_by_layer=a_by_layer,
-        guard_fn=_guard_fn if guard else None,
+        guard_fn=guard_fn,
         normalize_by_layers=bool(verified.manifest.get("normalize_by_layers", False)),
     )
     cm = knob.attach(adapter, dose_s=chosen_dose)

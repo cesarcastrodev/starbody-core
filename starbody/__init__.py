@@ -14,12 +14,19 @@ from starbody.adapters import (
     BaseModelAdapter,
     HuggingFaceAdapter,
 )
+from starbody.benchmarks import (
+    DEFAULT_CORE_BENCHMARKS,
+    evaluate_core_benchmarks,
+    import_external_benchmark_receipt,
+    run_lm_eval_benchmark,
+)
 from starbody.cartridge import (
     AttachedCartridgeHandle,
     GuardRuntimeState,
     StarbodyIntegrityError,
     VerifiedCartridge,
     apply_cartridge,
+    build_normalized_guard_fn,
     cartridge_context,
     compile_cartridge,
     ensure_default_signing_key,
@@ -27,6 +34,11 @@ from starbody.cartridge import (
     load_ed25519_private_key,
     load_ed25519_public_key,
     verify_cartridge,
+)
+from starbody.compose import (
+    ComposedCartridgeReport,
+    compose,
+    compose_cartridges,
 )
 from starbody.connect import (
     StarbodyConnection,
@@ -41,6 +53,10 @@ from starbody.interventions import (
     LinearPatchKnob,
     LoRAAlphaKnob,
     QuantizationStepKnob,
+)
+from starbody.serve import (
+    StarbodyServingRuntime,
+    create_serving_app,
 )
 
 try:
@@ -59,6 +75,8 @@ __all__ = [
     "AttachedCartridgeHandle",
     "AttachedController",
     "BaseModelAdapter",
+    "ComposedCartridgeReport",
+    "DEFAULT_CORE_BENCHMARKS",
     "GeodesicSOKKnob",
     "GuardRuntimeState",
     "HuggingFaceAdapter",
@@ -69,18 +87,26 @@ __all__ = [
     "StarbodyBifurcationWarning",
     "StarbodyConnection",
     "StarbodyIntegrityError",
+    "StarbodyServingRuntime",
     "VerifiedCartridge",
     "apply_cartridge",
+    "build_normalized_guard_fn",
     "cartridge_context",
     "certify",
     "compile_cartridge",
+    "compose",
+    "compose_cartridges",
     "connect",
+    "create_serving_app",
     "ensure_default_signing_key",
     "estimate_fp32_vram_mb",
+    "evaluate_core_benchmarks",
     "extract_tangent_basis_auto",
     "generate_ed25519_keypair",
+    "import_external_benchmark_receipt",
     "list_cached_hf_models",
     "load_ed25519_private_key",
     "load_ed25519_public_key",
+    "run_lm_eval_benchmark",
     "verify_cartridge",
 ]

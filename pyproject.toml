@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "starbody-core"
-version = "3.3.0"
-description = "Synergetic Manifold Pharmacology (SMP v3.3) Pure Emergent Metrology Engine, starbody/ Onboarding Package, Ed25519 Cartridges, SDK & CLI"
+version = "3.4.0"
+description = "Synergetic Manifold Pharmacology (SMP v3.4) Pure Emergent Metrology Engine, Multi-Cartridge Composition, Benchmark Receipts, OpenAI Proxy, SDK & CLI"
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}

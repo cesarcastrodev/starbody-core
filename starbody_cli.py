@@ -519,6 +519,128 @@ def cmd_studio(args: argparse.Namespace) -> int:
     return 0
 
 
+def _build_cli_sandbox_model(d_model: int = 32, n_layers: int = 2) -> nn.Module:
+    class _CliBlock(nn.Module):
+        def __init__(self) -> None:
+            super().__init__()
+            self.norm = nn.LayerNorm(d_model)
+            self.fc1 = nn.Linear(d_model, d_model)
+            self.fc2 = nn.Linear(d_model, d_model)
+
+        def forward(self, x: torch.Tensor) -> Tuple[torch.Tensor, None]:
+            return (x + 0.1 * self.fc2(torch.relu(self.fc1(self.norm(x)))), None)
+
+    class _CliLM(nn.Module):
+        def __init__(self) -> None:
+            super().__init__()
+            self.model = nn.Module()
+            self.model.layers = nn.ModuleList([_CliBlock() for _ in range(n_layers)])
+            self.head = nn.Linear(d_model, d_model)
+
+        def forward(self, x: torch.Tensor) -> torch.Tensor:
+            h = x
+            for blk in self.model.layers:
+                h, _ = blk(h)
+            return self.head(h)
+
+    return _CliLM().eval()
+
+
+def cmd_compose(args: argparse.Namespace) -> int:
+    from starbody.compose import compose_cartridges
+
+    weights = [float(w) for w in args.weights] if args.weights else None
+    report = compose_cartridges(
+        cartridge_paths=args.cartridges,
+        output_path=args.output,
+        weights=weights,
+        signing_key=args.signing_key,
+        max_interference_cos=float(args.max_interference),
+    )
+    print(json.dumps({
+        "status": "composed",
+        "output_path": str(report.output_path.resolve()),
+        "d_model": report.d_model,
+        "hook_path": report.hook_path,
+        "layer_indices": report.layer_indices,
+        "effective_rank_by_layer": report.effective_rank_by_layer,
+        "max_interference_cos_by_layer": report.max_interference_cos_by_layer,
+        "max_generator_recon_err": report.max_generator_recon_err,
+        "manifest_sha256": report.verified.manifest_sha256,
+        "signature_present": report.verified.signature_present,
+    }, indent=2))
+    return 0
+
+
+def cmd_eval(args: argparse.Namespace) -> int:
+    import starbody
+    from starbody.benchmarks import import_external_benchmark_receipt
+
+    if args.import_report:
+        receipt = import_external_benchmark_receipt(
+            args.import_report,
+            baseline_report_path=args.baseline_report,
+        )
+    else:
+        model_arg: Any = _build_cli_sandbox_model() if str(args.model).lower() == "sandbox" else args.model
+        conn = starbody.connect(
+            model_arg,
+            local_files_only=bool(args.local_only),
+            model_name="LocalSandboxLM-FP32" if str(args.model).lower() == "sandbox" else None,
+        )
+        conn.calibrate()
+        if args.cartridge:
+            from starbody.cartridge import _extract_layer_tensors_from_dict
+
+            ver = starbody.verify_cartridge(args.cartridge)
+            u_raw, a_raw, _ = _extract_layer_tensors_from_dict(ver.tensors)
+            dev = conn.adapter.device
+            conn.u_parallel_by_layer = {k: v.to(device=dev, dtype=torch.float32) for k, v in u_raw.items()}
+            conn.a_skew_by_layer = {k: v.to(device=dev, dtype=torch.float32) for k, v in a_raw.items()}
+            conn.layer_indices = sorted(conn.u_parallel_by_layer.keys())
+        receipt = conn.run_benchmarks(
+            suite=args.suite,
+            dose_s=args.dose,
+            tasks=args.tasks,
+            limit=int(args.limit),
+        )
+
+    if args.output:
+        out_p = Path(args.output)
+        out_p.parent.mkdir(parents=True, exist_ok=True)
+        out_p.write_text(json.dumps(receipt, indent=2), encoding="utf-8")
+    print(json.dumps(receipt, indent=2))
+    return 0
+
+
+def cmd_serve(args: argparse.Namespace) -> int:
+    import uvicorn
+    from starbody.serve import StarbodyServingRuntime, create_serving_app
+
+    model_arg: Any = _build_cli_sandbox_model() if str(args.model).lower() == "sandbox" else args.model
+    runtime = StarbodyServingRuntime(
+        model_arg,
+        local_files_only=bool(args.local_only),
+        model_name="LocalSandboxLM-FP32" if str(args.model).lower() == "sandbox" else None,
+    )
+    for spec in (args.cartridges or []):
+        if "=" in spec:
+            name, path_str = spec.split("=", 1)
+        else:
+            path_str = spec
+            name = Path(path_str).stem
+        runtime.load_cartridge(
+            name.strip(),
+            path_str.strip(),
+            public_key=args.public_key,
+            require_signature=bool(args.require_signature),
+        )
+
+    srv_app = create_serving_app(runtime)
+    uvicorn.run(srv_app, host=args.host, port=int(args.port))
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Starbody Studio SMP v3.3 CLI & One-Command Workbench")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -546,6 +668,34 @@ def build_parser() -> argparse.ArgumentParser:
     p_studio.add_argument("--no-browser", action="store_true")
     p_studio.add_argument("--local-only", action="store_true", help="Only load locally cached HuggingFace models")
 
+    p_compose = sub.add_parser("compose", help="Orthogonalize & compose >=2 verified `.starbody` cartridges")
+    p_compose.add_argument("--cartridges", nargs="+", required=True, help="Paths to input .starbody cartridges")
+    p_compose.add_argument("--output", required=True, help="Output path for composed .starbody cartridge")
+    p_compose.add_argument("--weights", nargs="+", type=float, default=None, help="Optional generator blend weights")
+    p_compose.add_argument("--signing-key", default=None, help="Optional Ed25519 private key PEM path")
+    p_compose.add_argument("--max-interference", type=float, default=1.0)
+
+    p_eval = sub.add_parser("eval", help="Run standardized benchmark receipts or import lm-eval/Inspect AI logs")
+    p_eval.add_argument("--model", type=str, default="sandbox")
+    p_eval.add_argument("--cartridge", type=str, default=None)
+    p_eval.add_argument("--dose", type=float, default=None)
+    p_eval.add_argument("--suite", type=str, default="starbody_core_v1")
+    p_eval.add_argument("--tasks", nargs="+", default=None)
+    p_eval.add_argument("--limit", type=int, default=20)
+    p_eval.add_argument("--import-report", type=str, default=None)
+    p_eval.add_argument("--baseline-report", type=str, default=None)
+    p_eval.add_argument("--output", type=str, default=None)
+    p_eval.add_argument("--local-only", action="store_true")
+
+    p_serve = sub.add_parser("serve", help="Start OpenAI-compatible multi-tenant `.starbody` steering proxy")
+    p_serve.add_argument("--model", type=str, default="sandbox")
+    p_serve.add_argument("--cartridge", dest="cartridges", action="append", default=[])
+    p_serve.add_argument("--public-key", type=str, default=None)
+    p_serve.add_argument("--require-signature", action="store_true")
+    p_serve.add_argument("--host", type=str, default="127.0.0.1")
+    p_serve.add_argument("--port", type=int, default=8080)
+    p_serve.add_argument("--local-only", action="store_true")
+
     return parser
 
 
@@ -560,6 +710,12 @@ def main(argv: Optional[List[str]] = None) -> int:
         return cmd_keygen(args)
     if args.command == "studio":
         return cmd_studio(args)
+    if args.command == "compose":
+        return cmd_compose(args)
+    if args.command == "eval":
+        return cmd_eval(args)
+    if args.command == "serve":
+        return cmd_serve(args)
     return 1
 
 

@@ -13,6 +13,9 @@ hf_cache/
 *token*
 *.pem
 *.key
+*.starbody
+smp_local_vault/keys/
+smp_local_vault/uploads/
 
 # Caches, virtualenvs & scratch outputs
 __pycache__/
@@ -29,10 +32,11 @@ results/
 smp_local_vault/checkpoints/
 smp_local_vault/results/
 
-# Explicitly allow core metrology code, tests, docs, figures, and ledger
+# Explicitly allow core metrology code, onboarding package, tests, docs, figures, and ledger
 !smp_core.py
 !starbody_sdk.py
 !starbody_cli.py
+!starbody/
 !ledger_smp_v1.json
 !tests/
 !figures/

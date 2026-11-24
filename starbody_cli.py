@@ -13,6 +13,7 @@ Subcommands:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import shutil
@@ -442,8 +443,84 @@ def cmd_demo_stream(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_keygen(args: argparse.Namespace) -> int:
+    from starbody.cartridge import generate_ed25519_keypair
+
+    out_dir = Path(args.out_dir)
+    priv_p, pub_p = generate_ed25519_keypair(
+        out_dir / "starbody_ed25519.pem",
+        out_dir / "starbody_ed25519.pub.pem",
+    )
+    pub_fp = hashlib.sha256(pub_p.read_bytes()).hexdigest()
+    print("========================================================================")
+    print("STARBODY ED25519 KEYPAIR GENERATED")
+    print("------------------------------------------------------------------------")
+    print(f"  Private Key : {priv_p.resolve()}")
+    print(f"  Public Key  : {pub_p.resolve()}")
+    print(f"  SHA-256 FP  : {pub_fp}")
+    print("========================================================================")
+    return 0
+
+
+def cmd_studio(args: argparse.Namespace) -> int:
+    import threading
+    import urllib.request
+    import webbrowser
+    import uvicorn
+    import starbody
+    import starbody_studio_server as srv
+
+    connect_host = "127.0.0.1" if args.host in ("0.0.0.0", "::") else args.host
+    base_url = f"http://{connect_host}:{args.port}"
+    ws_url = f"ws://{connect_host}:{args.port}/ws/worker"
+
+    config = uvicorn.Config(srv.app, host=args.host, port=int(args.port), log_level="warning")
+    server = uvicorn.Server(config)
+    srv_thread = threading.Thread(target=server.run, daemon=True)
+    srv_thread.start()
+
+    ready = False
+    for _ in range(60):
+        try:
+            with urllib.request.urlopen(f"{base_url}/api/telemetry", timeout=0.5) as resp:
+                if resp.status == 200:
+                    ready = True
+                    break
+        except Exception:
+            time.sleep(0.2)
+
+    if not ready:
+        server.should_exit = True
+        srv_thread.join(timeout=2.0)
+        print("[Starbody Studio] Failed to start server cleanly.", file=sys.stderr)
+        return 1
+
+    print(f"[Starbody Studio] Workbench ready at {base_url}")
+    if not args.no_browser:
+        webbrowser.open(base_url)
+
+    try:
+        if args.model:
+            print(f"[Starbody Studio] Connecting '{args.model}' ({args.intervention}) to {ws_url}...")
+            conn = starbody.connect(
+                args.model,
+                intervention=args.intervention,
+                local_files_only=bool(args.local_only),
+            )
+            conn.serve_studio(studio_url=ws_url)
+        else:
+            while srv_thread.is_alive():
+                time.sleep(0.5)
+    except KeyboardInterrupt:
+        print("\n[Starbody Studio] Shutting down...")
+    finally:
+        server.should_exit = True
+        srv_thread.join(timeout=3.0)
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Starbody Studio SMP v3.2 CI/CD & Streaming CLI")
+    parser = argparse.ArgumentParser(description="Starbody Studio SMP v3.3 CLI & One-Command Workbench")
     sub = parser.add_subparsers(dest="command", required=True)
 
     p_gate = sub.add_parser("gate", help="Run calibrated deployment gate and exit 0 (SAFE) or 1 (REJECTED)")
@@ -458,6 +535,17 @@ def build_parser() -> argparse.ArgumentParser:
     p_demo.add_argument("--duration", type=float, default=20.0)
     p_demo.add_argument("--server-url", type=str, default="http://127.0.0.1:8000")
 
+    p_key = sub.add_parser("keygen", help="Generate Ed25519 PEM keypair for `.starbody` cartridge signing")
+    p_key.add_argument("--out-dir", type=str, default=str(DEFAULT_VAULT_DIR / "keys"))
+
+    p_studio = sub.add_parser("studio", help="Boot Starbody Studio and optionally attach a live model worker")
+    p_studio.add_argument("--model", type=str, default=None, help="Optional HF model ID or local checkpoint path")
+    p_studio.add_argument("--intervention", type=str, default="geodesic_so_k")
+    p_studio.add_argument("--host", type=str, default="127.0.0.1")
+    p_studio.add_argument("--port", type=int, default=8000)
+    p_studio.add_argument("--no-browser", action="store_true")
+    p_studio.add_argument("--local-only", action="store_true", help="Only load locally cached HuggingFace models")
+
     return parser
 
 
@@ -468,6 +556,10 @@ def main(argv: Optional[List[str]] = None) -> int:
         return cmd_gate(args)
     if args.command == "demo-stream":
         return cmd_demo_stream(args)
+    if args.command == "keygen":
+        return cmd_keygen(args)
+    if args.command == "studio":
+        return cmd_studio(args)
     return 1
 
 

@@ -641,6 +641,61 @@ def cmd_serve(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_inspect(args: argparse.Namespace) -> int:
+    from starbody.registry import inspect_cartridge
+
+    info = inspect_cartridge(
+        args.cartridge,
+        public_key=args.public_key,
+        require_signature=bool(args.require_signature),
+    )
+    print(json.dumps(info, indent=2))
+    return 0
+
+
+def cmd_diff(args: argparse.Namespace) -> int:
+    from starbody.registry import diff_cartridges
+
+    report = diff_cartridges(args.cartridge_a, args.cartridge_b)
+    print(json.dumps(report, indent=2))
+    return 0
+
+
+def cmd_registry(args: argparse.Namespace) -> int:
+    from starbody.registry import StarbodyRegistry
+
+    reg = StarbodyRegistry(args.registry_dir)
+    act = args.registry_action
+    if act == "list":
+        print(json.dumps({"cartridges": reg.list_entries(name=args.name)}, indent=2))
+        return 0
+    if act == "publish":
+        if not args.cartridge or not args.name:
+            print("[Registry] --cartridge and --name are required for publish.", file=sys.stderr)
+            return 2
+        entry = reg.publish(
+            args.cartridge,
+            name=args.name,
+            tag=args.tag or "v1",
+            public_key=args.public_key,
+            require_signature=bool(args.require_signature),
+        )
+        print(json.dumps({"status": "published", "entry": entry}, indent=2))
+        return 0
+    if act == "rollback":
+        if not args.name:
+            print("[Registry] --name is required for rollback.", file=sys.stderr)
+            return 2
+        res = reg.rollback(args.name, target_tag=args.tag, ledger_path=args.ledger)
+        print(json.dumps({"status": "rolled_back", **res}, indent=2))
+        return 0
+    if act == "verify":
+        ver = reg.verify_all(public_key=args.public_key, require_signatures=bool(args.require_signature))
+        print(json.dumps(ver, indent=2))
+        return 0 if ver["all_ok"] else 1
+    return 1
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Starbody Studio SMP v3.3 CLI & One-Command Workbench")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -696,6 +751,25 @@ def build_parser() -> argparse.ArgumentParser:
     p_serve.add_argument("--port", type=int, default=8080)
     p_serve.add_argument("--local-only", action="store_true")
 
+    p_insp = sub.add_parser("inspect", help="Inspect and fail-closed verify a `.starbody` cartridge")
+    p_insp.add_argument("cartridge", type=str)
+    p_insp.add_argument("--public-key", type=str, default=None)
+    p_insp.add_argument("--require-signature", action="store_true")
+
+    p_diff = sub.add_parser("diff", help="Compare two `.starbody` cartridges (Grassmannian angles & generator drift)")
+    p_diff.add_argument("cartridge_a", type=str)
+    p_diff.add_argument("cartridge_b", type=str)
+
+    p_reg = sub.add_parser("registry", help="Manage content-addressed local `.starbody` cartridge registry")
+    p_reg.add_argument("registry_action", choices=["list", "publish", "rollback", "verify"])
+    p_reg.add_argument("--registry-dir", type=str, default=str(DEFAULT_VAULT_DIR / "registry"))
+    p_reg.add_argument("--name", type=str, default=None)
+    p_reg.add_argument("--tag", type=str, default=None)
+    p_reg.add_argument("--cartridge", type=str, default=None)
+    p_reg.add_argument("--public-key", type=str, default=None)
+    p_reg.add_argument("--require-signature", action="store_true")
+    p_reg.add_argument("--ledger", type=str, default=None)
+
     return parser
 
 
@@ -716,6 +790,12 @@ def main(argv: Optional[List[str]] = None) -> int:
         return cmd_eval(args)
     if args.command == "serve":
         return cmd_serve(args)
+    if args.command == "inspect":
+        return cmd_inspect(args)
+    if args.command == "diff":
+        return cmd_diff(args)
+    if args.command == "registry":
+        return cmd_registry(args)
     return 1
 
 

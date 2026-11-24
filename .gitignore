@@ -16,6 +16,7 @@ hf_cache/
 *.starbody
 smp_local_vault/keys/
 smp_local_vault/uploads/
+smp_local_vault/registry/
 
 # Caches, virtualenvs & scratch outputs
 __pycache__/

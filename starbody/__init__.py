@@ -54,6 +54,11 @@ from starbody.interventions import (
     LoRAAlphaKnob,
     QuantizationStepKnob,
 )
+from starbody.registry import (
+    StarbodyRegistry,
+    diff_cartridges,
+    inspect_cartridge,
+)
 from starbody.serve import (
     StarbodyServingRuntime,
     create_serving_app,
@@ -87,6 +92,7 @@ __all__ = [
     "StarbodyBifurcationWarning",
     "StarbodyConnection",
     "StarbodyIntegrityError",
+    "StarbodyRegistry",
     "StarbodyServingRuntime",
     "VerifiedCartridge",
     "apply_cartridge",
@@ -98,12 +104,14 @@ __all__ = [
     "compose_cartridges",
     "connect",
     "create_serving_app",
+    "diff_cartridges",
     "ensure_default_signing_key",
     "estimate_fp32_vram_mb",
     "evaluate_core_benchmarks",
     "extract_tangent_basis_auto",
     "generate_ed25519_keypair",
     "import_external_benchmark_receipt",
+    "inspect_cartridge",
     "list_cached_hf_models",
     "load_ed25519_private_key",
     "load_ed25519_public_key",

@@ -10,9 +10,12 @@ where zero-dose rows stay bit-exact with baseline while non-zero rows rotate on 
 from __future__ import annotations
 
 import asyncio
+from collections import deque
+import hashlib
 import json
 import math
 from pathlib import Path
+import threading
 import time
 from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple, Union
 import uuid
@@ -120,6 +123,18 @@ class StarbodyServingRuntime:
         self.adapter = HuggingFaceAdapter(nn_model, tokenizer=tokenizer, device=target_dev)
         self.cartridges: Dict[str, VerifiedCartridge] = {}
         self.cartridge_paths: Dict[str, str] = {}
+        self.cartridge_history: Dict[str, List[Tuple[VerifiedCartridge, str]]] = {}
+        self.audit_log: deque[Dict[str, Any]] = deque(maxlen=256)
+        self._metrics_lock = threading.Lock()
+        self._metrics: Dict[str, Any] = {
+            "requests_total": 0,
+            "tokens_generated_total": 0,
+            "guard_attenuations_total": 0,
+            "latency_ms_sum": 0.0,
+            "latency_count": 0,
+            "last_rel_e_perp": 0.0,
+            "last_effective_threshold": 0.0,
+        }
         self._lock = asyncio.Lock()
 
     def load_cartridge(
@@ -143,6 +158,149 @@ class StarbodyServingRuntime:
         self.cartridges[name] = ver
         self.cartridge_paths[name] = str(Path(cartridge_path).resolve())
         return ver
+
+    def swap_cartridge(
+        self,
+        name: str,
+        cartridge_path: Union[str, Path],
+        public_key: Any = None,
+        require_signature: bool = False,
+    ) -> Dict[str, Any]:
+        """Verifies a replacement `.starbody` cartridge fail-closed and swaps atomically with rollback stack."""
+        prev_ver = self.cartridges.get(name)
+        prev_path = self.cartridge_paths.get(name, "")
+        new_ver = verify_cartridge(cartridge_path, public_key=public_key, require_signature=require_signature)
+        expected_d = new_ver.manifest.get("d_model")
+        if expected_d is not None and int(expected_d) != self.adapter.d_model:
+            raise StarbodyIntegrityError(
+                f"Model d_model mismatch: cartridge '{name}' expects {expected_d}, model has {self.adapter.d_model}"
+            )
+        expected_hook = new_ver.manifest.get("hook_path")
+        if expected_hook is not None and str(expected_hook) != self.adapter.hook_path_prefix():
+            raise StarbodyIntegrityError(
+                f"Hook path mismatch: cartridge '{name}' expects '{expected_hook}', model uses '{self.adapter.hook_path_prefix()}'"
+            )
+        if prev_ver is not None:
+            self.cartridge_history.setdefault(name, []).append((prev_ver, prev_path))
+        new_path = str(Path(cartridge_path).resolve())
+        self.cartridges[name] = new_ver
+        self.cartridge_paths[name] = new_path
+        return {
+            "status": "swapped",
+            "name": name,
+            "previous_manifest_sha256": prev_ver.manifest_sha256 if prev_ver is not None else None,
+            "manifest_sha256": new_ver.manifest_sha256,
+            "history_depth": len(self.cartridge_history.get(name, [])),
+        }
+
+    def rollback_cartridge(self, name: str) -> Dict[str, Any]:
+        """Atomically restores the previously mounted cartridge for `name`."""
+        stack = self.cartridge_history.get(name)
+        if not stack:
+            raise KeyError(f"No rollback history available for cartridge '{name}'.")
+        cur_ver = self.cartridges.get(name)
+        prev_ver, prev_path = stack.pop()
+        self.cartridges[name] = prev_ver
+        self.cartridge_paths[name] = prev_path
+        return {
+            "status": "rolled_back",
+            "name": name,
+            "replaced_manifest_sha256": cur_ver.manifest_sha256 if cur_ver is not None else None,
+            "restored_manifest_sha256": prev_ver.manifest_sha256,
+            "restored_path": prev_path,
+            "remaining_history": len(stack),
+        }
+
+    def unload_cartridge(self, name: str) -> bool:
+        if name not in self.cartridges:
+            return False
+        self.cartridges.pop(name, None)
+        self.cartridge_paths.pop(name, None)
+        self.cartridge_history.pop(name, None)
+        return True
+
+    def record_request_telemetry(
+        self,
+        endpoint: str,
+        prompt_text: str,
+        steering: Mapping[str, Any],
+        tokens_generated: int,
+        ms_per_tok: float,
+        request_id: str,
+    ) -> None:
+        cname = steering.get("cartridge")
+        manifest_sha = self.cartridges[cname].manifest_sha256 if (cname and cname in self.cartridges) else None
+        att_count = int(steering.get("attenuation_count", 0) or 0)
+        rel_ep = float(steering.get("last_e_perp", 0.0) or 0.0)
+        eff_thr = float(steering.get("effective_threshold", 0.0) or 0.0)
+        prompt_digest = hashlib.sha256(prompt_text.encode("utf-8")).hexdigest()[:12]
+
+        entry = {
+            "timestamp_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "request_id": request_id,
+            "endpoint": endpoint,
+            "cartridge": cname,
+            "manifest_sha256": manifest_sha,
+            "prompt_sha256_prefix": prompt_digest,
+            "dose_s": float(steering.get("dose_s", 0.0) or 0.0),
+            "effective_dose_s": float(steering.get("effective_dose_s", 0.0) or 0.0),
+            "attenuation_count": att_count,
+            "last_e_perp": rel_ep,
+            "effective_threshold": eff_thr,
+            "tokens_generated": int(tokens_generated),
+            "ms_per_tok": float(ms_per_tok),
+        }
+        with self._metrics_lock:
+            self.audit_log.append(entry)
+            self._metrics["requests_total"] += 1
+            self._metrics["tokens_generated_total"] += int(tokens_generated)
+            self._metrics["guard_attenuations_total"] += att_count
+            self._metrics["latency_ms_sum"] += float(ms_per_tok)
+            self._metrics["latency_count"] += 1
+            self._metrics["last_rel_e_perp"] = rel_ep
+            self._metrics["last_effective_threshold"] = eff_thr
+
+    def render_prometheus_metrics(self) -> str:
+        with self._metrics_lock:
+            reqs = int(self._metrics["requests_total"])
+            toks = int(self._metrics["tokens_generated_total"])
+            atts = int(self._metrics["guard_attenuations_total"])
+            lat_avg = (
+                self._metrics["latency_ms_sum"] / self._metrics["latency_count"]
+                if self._metrics["latency_count"] > 0
+                else 0.0
+            )
+            rel_ep = float(self._metrics["last_rel_e_perp"])
+            eff_thr = float(self._metrics["last_effective_threshold"])
+        vram = _peak_vram_mb(self.adapter.device)
+        mounted = len(self.cartridges)
+        lines = [
+            "# HELP starbody_requests_total Total OpenAI/Starbody proxy requests served.",
+            "# TYPE starbody_requests_total counter",
+            f"starbody_requests_total {reqs}",
+            "# HELP starbody_tokens_generated_total Total generated tokens across proxy requests.",
+            "# TYPE starbody_tokens_generated_total counter",
+            f"starbody_tokens_generated_total {toks}",
+            "# HELP starbody_guard_attenuations_total Cumulative runtime guard dose attenuations.",
+            "# TYPE starbody_guard_attenuations_total counter",
+            f"starbody_guard_attenuations_total {atts}",
+            "# HELP starbody_guard_last_rel_e_perp Latest energy-normalized orthogonal residual.",
+            "# TYPE starbody_guard_last_rel_e_perp gauge",
+            f"starbody_guard_last_rel_e_perp {rel_ep:.8f}",
+            "# HELP starbody_guard_effective_threshold Latest calibrated guard threshold.",
+            "# TYPE starbody_guard_effective_threshold gauge",
+            f"starbody_guard_effective_threshold {eff_thr:.8f}",
+            "# HELP starbody_latency_ms_per_tok_avg Running mean decode latency (ms/tok).",
+            "# TYPE starbody_latency_ms_per_tok_avg gauge",
+            f"starbody_latency_ms_per_tok_avg {lat_avg:.4f}",
+            "# HELP starbody_vram_peak_mb Peak allocated GPU memory (MB).",
+            "# TYPE starbody_vram_peak_mb gauge",
+            f"starbody_vram_peak_mb {vram:.2f}",
+            "# HELP starbody_cartridges_mounted Number of verified `.starbody` cartridges currently mounted.",
+            "# TYPE starbody_cartridges_mounted gauge",
+            f"starbody_cartridges_mounted {mounted}",
+        ]
+        return "\n".join(lines) + "\n"
 
     def parse_steering_spec(
         self,
@@ -404,8 +562,8 @@ class StarbodyServingRuntime:
 
 def create_serving_app(runtime: StarbodyServingRuntime) -> Any:
     """Creates a FastAPI OpenAI-compatible + Starbody multi-tenant HTTP server."""
-    from fastapi import Body, FastAPI, HTTPException, Request
-    from fastapi.responses import JSONResponse, StreamingResponse
+    from fastapi import Body, FastAPI, HTTPException, Query, Request
+    from fastapi.responses import JSONResponse, PlainTextResponse, StreamingResponse
 
     srv_app = FastAPI(title="Starbody OpenAI-Compatible Steering Proxy (SMP v3.3)")
 
@@ -463,6 +621,56 @@ def create_serving_app(runtime: StarbodyServingRuntime) -> Any:
             raise HTTPException(status_code=500, detail=str(exc)) from exc
         return JSONResponse({"status": "loaded", "name": name, "manifest_sha256": ver.manifest_sha256})
 
+    @srv_app.post("/v1/starbody/cartridges/swap")
+    async def swap_cartridge_endpoint(body: Dict[str, Any] = Body(...)) -> JSONResponse:
+        path = str(body.get("path") or "").strip()
+        name = str(body.get("name") or "").strip()
+        if not name or not path:
+            raise HTTPException(status_code=400, detail="Both `name` and `path` are required.")
+        pub_key = body.get("public_key")
+        req_sig = bool(body.get("require_signature", False))
+        try:
+            async with runtime._lock:
+                res = runtime.swap_cartridge(name, path, public_key=pub_key, require_signature=req_sig)
+        except StarbodyIntegrityError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        except Exception as exc:
+            raise HTTPException(status_code=500, detail=str(exc)) from exc
+        return JSONResponse(res)
+
+    @srv_app.post("/v1/starbody/cartridges/rollback")
+    async def rollback_cartridge_endpoint(body: Dict[str, Any] = Body(...)) -> JSONResponse:
+        name = str(body.get("name") or "").strip()
+        if not name:
+            raise HTTPException(status_code=400, detail="Missing `name`.")
+        try:
+            async with runtime._lock:
+                res = runtime.rollback_cartridge(name)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        return JSONResponse(res)
+
+    @srv_app.delete("/v1/starbody/cartridges/{name}")
+    async def unload_cartridge_endpoint(name: str) -> JSONResponse:
+        async with runtime._lock:
+            removed = runtime.unload_cartridge(name)
+        if not removed:
+            raise HTTPException(status_code=404, detail=f"Cartridge '{name}' is not mounted.")
+        return JSONResponse({"status": "unloaded", "name": name})
+
+    @srv_app.get("/metrics")
+    def metrics_endpoint() -> PlainTextResponse:
+        return PlainTextResponse(
+            runtime.render_prometheus_metrics(),
+            media_type="text/plain; version=0.0.4; charset=utf-8",
+        )
+
+    @srv_app.get("/v1/starbody/audit_log")
+    def audit_log_endpoint(limit: int = Query(default=50, ge=1, le=256)) -> JSONResponse:
+        with runtime._metrics_lock:
+            entries = list(runtime.audit_log)[-int(limit):]
+        return JSONResponse({"count": len(entries), "entries": entries})
+
     def _resolve_steering(req: Request, body: Mapping[str, Any]) -> Dict[str, Any]:
         headers_lower = {k.lower(): v for k, v in req.headers.items()}
         try:
@@ -498,6 +706,14 @@ def create_serving_app(runtime: StarbodyServingRuntime) -> Any:
 
         comp_id = f"chatcmpl-{uuid.uuid4().hex[:12]}"
         created_ts = int(time.time())
+        runtime.record_request_telemetry(
+            endpoint="/v1/chat/completions",
+            prompt_text=prompt_text,
+            steering=out["steering"],
+            tokens_generated=out["completion_tokens"],
+            ms_per_tok=out["ms_per_tok"],
+            request_id=comp_id,
+        )
         if bool(body.get("stream", False)):
             words = out["text"].split(" ") if out["text"] else [""]
 
@@ -566,8 +782,17 @@ def create_serving_app(runtime: StarbodyServingRuntime) -> Any:
                 steering,
             )
 
+        cmpl_id = f"cmpl-{uuid.uuid4().hex[:12]}"
+        runtime.record_request_telemetry(
+            endpoint="/v1/completions",
+            prompt_text=prompt,
+            steering=out["steering"],
+            tokens_generated=out["completion_tokens"],
+            ms_per_tok=out["ms_per_tok"],
+            request_id=cmpl_id,
+        )
         return JSONResponse({
-            "id": f"cmpl-{uuid.uuid4().hex[:12]}",
+            "id": cmpl_id,
             "object": "text_completion",
             "created": int(time.time()),
             "model": model_label,
@@ -611,6 +836,15 @@ def create_serving_app(runtime: StarbodyServingRuntime) -> Any:
         except ValueError as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
+        total_batch_toks = sum(int(r.get("completion_tokens", 1)) for r in res.get("results", []))
+        runtime.record_request_telemetry(
+            endpoint="/v1/starbody/batch_completions",
+            prompt_text="\n".join(str(p) for p in prompts),
+            steering={"cartridge": cartridge, "dose_s": float(doses[0]) if doses else 0.0, "effective_dose_s": float(doses[0]) if doses else 0.0},
+            tokens_generated=total_batch_toks,
+            ms_per_tok=round(float(res.get("batch_latency_ms", 0.0)) / max(1, total_batch_toks), 3),
+            request_id=f"batch-{uuid.uuid4().hex[:12]}",
+        )
         return JSONResponse(res)
 
     return srv_app

@@ -467,6 +467,73 @@ class AgentProxyAdapter:
             beta_consensus=2.2,
         ).to(self.device)
         self._baseline_nodes: Optional[torch.Tensor] = None
+        self._baseline_lambda2: Optional[float] = None
+        self._turn_history: List[Dict[str, Any]] = []
+
+    def reset(self) -> None:
+        """Clears baseline reference & recorded turn history for a new session."""
+        self._baseline_nodes = None
+        self._baseline_lambda2 = None
+        self._turn_history = []
+
+    def _measure_emergent_v50(self, x_nodes: torch.Tensor, delay_turns: int) -> float:
+        """
+        Pure-emergent bisection using `InteractomeLaplacianTracker.apply_counter_intervention_after_delay`
+        to compute the exact counter-dose / write-dose ratio needed to reverse node-0 drift.
+        """
+        assert self._baseline_nodes is not None
+        mean_shift = (x_nodes - self._baseline_nodes).to(torch.float64)
+        shift_norm = float(torch.linalg.norm(mean_shift).item())
+        if shift_norm < 1e-6:
+            return 1.0
+
+        diff0 = mean_shift[0]
+        d0_norm = float(torch.linalg.norm(diff0).item())
+        drive_raw = diff0 if d0_norm >= 1e-6 else mean_shift.mean(dim=0)
+        drive_norm = float(torch.linalg.norm(drive_raw).clamp(min=1e-12).item())
+        drive_unit = (drive_raw / drive_norm).to(dtype=x_nodes.dtype, device=self.device)
+
+        write_dose = max(0.3, min(1.5, d0_norm if d0_norm >= 1e-6 else shift_norm))
+        tau = max(1, min(16, int(delay_turns)))
+
+        x_pos = self.tracker.apply_counter_intervention_after_delay(
+            self._baseline_nodes,
+            drive_unit,
+            write_dose=write_dose,
+            delay_turns=tau,
+            counter_dose=0.0,
+            write_turns=4,
+            counter_turns=4,
+            settle_turns=4,
+        )
+        target_proj = float(
+            torch.dot((x_pos[0] - self._baseline_nodes[0]).to(torch.float64), drive_unit.to(torch.float64)).item()
+        )
+        if target_proj <= 1e-6:
+            return 1.0
+        half_proj = 0.5 * target_proj
+
+        lo, hi = 0.0, 4.0 * write_dose
+        for _ in range(6):
+            mid = 0.5 * (lo + hi)
+            x_try = self.tracker.apply_counter_intervention_after_delay(
+                self._baseline_nodes,
+                drive_unit,
+                write_dose=write_dose,
+                delay_turns=tau,
+                counter_dose=mid,
+                write_turns=4,
+                counter_turns=4,
+                settle_turns=4,
+            )
+            cur_proj = float(
+                torch.dot((x_try[0] - self._baseline_nodes[0]).to(torch.float64), drive_unit.to(torch.float64)).item()
+            )
+            if cur_proj <= half_proj:
+                hi = mid
+            else:
+                lo = mid
+        return round(float((0.5 * (lo + hi)) / max(write_dose, 1e-12)), 4)
 
     def _encode_message(self, text: str) -> torch.Tensor:
         if self.embed_fn is not None:
@@ -511,23 +578,41 @@ class AgentProxyAdapter:
         if self._baseline_nodes is None:
             self._baseline_nodes = x_nodes.clone()
         g_mat, _, stats = self.tracker.compute_conductance_and_laplacian(x_nodes)
+        lam2 = float(stats["fiedler_lambda2"])
+        if self._baseline_lambda2 is None:
+            self._baseline_lambda2 = max(lam2, 1e-6)
+
         mean_shift = x_nodes - self._baseline_nodes
         e_total, e_parallel, e_perp = self.tracker.certifier.decompose_state_shift(mean_shift)
 
-        # Evaluate natural delayed reversal effort ratio across horizon tau
+        lam2_ratio = float(lam2 / max(self._baseline_lambda2, 1e-6))
+        if lam2_ratio < 0.45 or lam2 < 0.25:
+            fracture_risk = "FRACTURE_IMMINENT"
+        elif lam2_ratio < 0.80:
+            fracture_risk = "TREMOR_WARNING"
+        else:
+            fracture_risk = "NOMINAL"
+
         tau_ref = max(1, int(turns_horizon))
-        v50_est = max(0.1, min(1.5, 0.25 + 0.14 * float(e_total) / max(1.0, float(stats["fiedler_lambda2"]))))
-        return {
+        v50_emergent = self._measure_emergent_v50(x_nodes, delay_turns=tau_ref)
+        turn_idx = len(self._turn_history)
+        out = {
+            "turn_index": turn_idx,
+            "agent_names": list(self.agent_names),
             "node_embeddings_shape": list(x_nodes.shape),
-            "fiedler_lambda2": float(stats["fiedler_lambda2"]),
+            "fiedler_lambda2": lam2,
+            "lambda2_ratio": round(lam2_ratio, 4),
+            "fracture_risk": fracture_risk,
             "mean_conductance": float(stats["mean_conductance"]),
             "conductance_matrix": g_mat.detach().cpu().tolist(),
             "e_total": float(e_total),
             "e_parallel": float(e_parallel),
             "e_perp": float(e_perp),
-            "consensus_v50_tau": round(float(v50_est), 4),
+            "consensus_v50_tau": float(v50_emergent),
             "tau_horizon": tau_ref,
         }
+        self._turn_history.append(out)
+        return out
 
     async def evaluate_turns_async(
         self,
